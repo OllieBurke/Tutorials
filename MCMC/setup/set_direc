@@ -1,0 +1,9 @@
+mkdir new_plots
+
+mkdir new_plots/matched_filter
+mkdir new_plots/trace_plot_before_burnin
+mkdir new_plots/trace_plot_after_burnin
+mkdir new_plots/waveform_plot
+mkdir new_plots/joint_post
+
+mkdir movies
