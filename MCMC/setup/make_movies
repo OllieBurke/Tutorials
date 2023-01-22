@@ -8,9 +8,9 @@ else;
     echo "Directory does not exist. Creating...";
     mkdir movies;
 fi;
-
+echo 
 echo building: posterior.gif
-cd new_plots/joint_post
+cd plots/joint_post
 convert -loop 0 $(ls -1 *.png | sort -V) joint_post.gif
 mv joint_post.gif ../../movies
 echo finished: posterior.gif
@@ -27,7 +27,7 @@ convert -loop 0 $(ls -1 *.png | sort -V) trace_plot_after_burnin.gif
 mv trace_plot_after_burnin.gif ../../movies
 echo finished: trace_plot_after_burnin.gif
 echo
-echo waveform_plot.gif
+echo building: waveform_plot.gif
 cd ../waveform_plot
 convert -loop 0 $(ls -1 *.png | sort -V) waveform_plot.gif
 mv waveform_plot.gif ../../movies
@@ -38,8 +38,8 @@ cd ../matched_filter
 convert -loop 0 $(ls -1 *.png | sort -V) matched_filter.gif
 mv matched_filter.gif ../../movies
 echo finshed: matched_filter.gif
-
+echo
 cd ../..
 echo Now removing plots directory
-rm -r new_plots 
+rm -r plots 
 

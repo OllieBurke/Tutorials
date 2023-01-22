@@ -61,7 +61,7 @@ def MCMC_run(data_f, t, variance_noise_f,
     Metropolis MCMC sampler
     '''
     
-    plot_direc = os.getcwd() + "/new_plots"
+    plot_direc = os.getcwd() + "/plots"
     # Set starting values
 
     a_chain = [param_start[0]]
@@ -107,40 +107,6 @@ def MCMC_run(data_f, t, variance_noise_f,
         
         if i % printerval == 0: # Print accept/reject ratio.
             print("Iteration ", i, "accept_reject =",sum(accept_reject_count)/len(accept_reject_count))
-
-        # if i % save_interval == 0:
-        #     true_vals_for_plot = [true_vals[0],np.log10(true_vals[1]), np.log10(true_vals[2])]
-
-            # os.chdir('/Users/oburke/Documents/LISA_Science/Tutorials/Bayesian_Statistics_Tutorial/MCMC/plots/still_images_single_post_A')
-            # fig = plt.hist(a_chain,bins = 30,density = True)
-            # plt.axvline(true_vals[0],color = 'red', label = 'True value')            
-            # plt.axvline(a_prop,color = 'green', label = 'Proposed value')
-            # plt.legend(loc = 'upper right',fontsize = 12)
-            # plt.xlabel(r'Parameter $\theta$',fontsize = 12)
-            # plt.xlim([0.9777887399340167,1.021990826305361])
-            # plt.grid()
-            # plt.xticks([])
-            # plt.yticks([])
-
-            # plt.ylabel(r'Posterior',fontsize = 12)
-            # plt.title("Metropolis Algorithm",fontsize = 15)
-            # plt.tight_layout()
-            # plt.savefig("a_chain_hist" + str(j) + ".png")
-            # plt.clf()
-            # j+=1
-
-            # os.chdir('/Users/oburke/Documents/LISA_Science/Tutorials/Bayesian_Statistics_Tutorial/MCMC/plots/still_images_single_trace')
-            # plt.plot(a_chain, color = 'purple')
-            # plt.plot(true_vals[0]*np.ones(Ntotal),c = 'red',label = 'True value')
-            # plt.xlabel('Iteration',fontsize = 10)
-            # plt.ylabel(r"Parameter: $\theta$", fontsize = 12)
-            # plt.title("Trace plots")
-            # plt.yticks([])
-            # plt.tight_layout()
-            # plt.legend(loc = "lower right", fontsize = 15)
-            # plt.savefig("trace_plot_single" + str(j) +".png")
-            # plt.clf()
-            # j+=1
 
         if Generate_Plots:
             norm = np.sqrt(sum((abs(signal_prop_f)**2) / variance_noise_f))

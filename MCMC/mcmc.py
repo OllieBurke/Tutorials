@@ -47,7 +47,7 @@ data_f = h_true_f + noise_f         # Construct data stream
 
 # MCMC - parameter estimation
 
-Ntotal = 10000  # Total number of iterations
+Ntotal = 30000  # Total number of iterations
 burnin = 6000   # Set burn-in. This is the amount of samples we will discard whilst looking 
              # for the true parameters
 
