@@ -6,7 +6,7 @@ $$ h(t;a,f,\dot{f}) = a \sin \left(2\pi t \left[f + \frac{1}{2}\dot{f}t\right]\r
 and we aim to estimate the parameter set $\boldsymbol{\theta} = \{a,f,\dot{f}\}$.
 
 ## Getting started
-1. Install Anaconda if you do not have it
+1. Install Anaconda if you do not have it.
 2. Create a virtual environment using:
 
     > `conda create -n mcmc_tutorial -c conda-forge numpy scipy matplotlib astropy corner 
@@ -18,12 +18,19 @@ and we aim to estimate the parameter set $\boldsymbol{\theta} = \{a,f,\dot{f}\}$
 1. The script `LISA_utils.py` is a utility script containing useful python functions. Such functions include an approximate parametric model for the LISA power spectral density, for example.
 2. The script `mcmc_func.py` includes the waveform model and scripts used to build the Metropolis sampler.
 3. The script `mcmc.py` executes the metropolis algorithm. Within this script, set `Generate_Plots = True` if you want to create movies as the sampler goes along. 
+4. The script `plotting_code.py` plots important parts of the sampler as it runs. It plots: 
+   1. Evolution of the proposed waveform as the points get closer and closer to the true waveform.
+   2. The trace plot before burnin.
+   3. The matched filter statistic that should tend towards the optimal matched filtering signal-to-noise ratio.
+   4. The trace plot after burnin.
+   5. The evolution of the posterior shown by a corner plot.
 
 ## How to use the code
 
 To execute the code:
-1. Source the environment above: `conda activate mcmc_tutorial` 
-2. Run `python mcmc.py`
+1. Locate the `MCMC` directory 
+2. Source the environment above: `conda activate mcmc_tutorial` 
+3. Run `python mcmc.py`
 
 ## How to generate movies
                                   
