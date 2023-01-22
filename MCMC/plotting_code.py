@@ -1,14 +1,14 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import os
-import corner
 from mcmc_fun import waveform
-
+from corner import corner
 def plot_PSD(PSD,h_true_f,freq,delta_t):
     """
     Here we plot a plot a comparison of the signal in the frequency domain against the PSD.
     Useful if we wish to determine roughly what the signal-to-noise ratio is by eye.
     """
+
     os.chdir('/Users/oburke/Documents/LISA_Science/Tutorials/Bayesian_Statistics_Tutorial/MCMC/plots/PSD_plot')
     # os.chdir("DIRECTORY YOU WANT TO SAVE PLOT HERE")
     plt.figure(figsize = (12,8))
@@ -29,8 +29,11 @@ def plot_PSD(PSD,h_true_f,freq,delta_t):
     plt.clf()
     plt.close()
 
-def waveform_plot(j1, t, t_hour, true_vals, a_prop, f_prop, fdot_prop,noise_t_plot):
-    os.chdir('/Users/oburke/Documents/LISA_Science/Tutorials/Bayesian_Statistics_Tutorial/MCMC/plots/still_images_waveform_plots')
+def waveform_plot(j1, t, t_hour, true_vals, a_prop, f_prop, fdot_prop,noise_t_plot, dir):
+    waveform_direc = dir + "/waveform_plot"
+    # os.chdir('/Users/oburke/Documents/LISA_Science/Tutorials/Bayesian_Statistics_Tutorial/MCMC/plots/still_images_waveform_plots')
+    os.chdir(waveform_direc)
+
     # os.chdir("DIRECTORY YOU WANT TO SAVE PLOT HERE")
 
     plt.plot(t_hour, noise_t_plot, alpha = 0.7, c = 'grey', label = 'Noise')
@@ -47,8 +50,10 @@ def waveform_plot(j1, t, t_hour, true_vals, a_prop, f_prop, fdot_prop,noise_t_pl
     j1+=1
     return j1
 
-def matched_filter_plot(j2,matched_filter_vec, opt_SNR, burnin):
-    os.chdir('/Users/oburke/Documents/LISA_Science/Tutorials/Bayesian_Statistics_Tutorial/MCMC/plots/still_images_matched_filter')
+def matched_filter_plot(j2,matched_filter_vec, opt_SNR, burnin, dir):
+    matched_filter_direc = dir + "/matched_filter"
+    # os.chdir('/Users/oburke/Documents/LISA_Science/Tutorials/Bayesian_Statistics_Tutorial/MCMC/plots/still_images_waveform_plots')
+    os.chdir(matched_filter_direc)
     # os.chdir("DIRECTORY YOU WANT TO SAVE PLOT HERE")
 
     plt.plot(matched_filter_vec, label = 'Matched filter SNR')
@@ -66,10 +71,13 @@ def matched_filter_plot(j2,matched_filter_vec, opt_SNR, burnin):
     j2+=1
     return j2
 
-def trace_plot_before_burnin(j3,a_chain,f_chain,fdot_chain,true_vals,Ntotal,burnin):
-    os.chdir('/Users/oburke/Documents/LISA_Science/Tutorials/Bayesian_Statistics_Tutorial/MCMC/plots/still_images_trace_plot_before_burnin')
+def trace_plot_before_burnin(j3,a_chain,f_chain,fdot_chain,true_vals,Ntotal,burnin,dir):
+    # os.chdir('/Users/oburke/Documents/LISA_Science/Tutorials/Bayesian_Statistics_Tutorial/MCMC/plots/still_images_trace_plot_before_burnin')
     # os.chdir("DIRECTORY YOU WANT TO SAVE PLOT HERE")
 
+    trace_plot_before_burnin_direc = dir + "/trace_plot_before_burnin"
+    # os.chdir('/Users/oburke/Documents/LISA_Science/Tutorials/Bayesian_Statistics_Tutorial/MCMC/plots/still_images_waveform_plots')
+    os.chdir(trace_plot_before_burnin_direc)
     samples = [np.log10(a_chain), np.log10(f_chain), np.log10(fdot_chain)]
     true_vals_for_plot = [np.log10(true_vals[0]),np.log10(true_vals[1]), np.log10(true_vals[2])]
     param_label = [r'$\log_{10}(a)$',r'$\log_{10}(f)$',r'$\log_{10}(\dot{f})$']
@@ -90,9 +98,13 @@ def trace_plot_before_burnin(j3,a_chain,f_chain,fdot_chain,true_vals,Ntotal,burn
     j3+=1
     return j3
 
-def trace_plot_after_burnin(j4,a_chain,f_chain,fdot_chain,true_vals,Ntotal,burnin):
-    os.chdir('/Users/oburke/Documents/LISA_Science/Tutorials/Bayesian_Statistics_Tutorial/MCMC/plots/still_images_trace_plot_after_burnin')
+def trace_plot_after_burnin(j4,a_chain,f_chain,fdot_chain,true_vals,Ntotal,burnin,dir):
+    # os.chdir('/Users/oburke/Documents/LISA_Science/Tutorials/Bayesian_Statistics_Tutorial/MCMC/plots/still_images_trace_plot_after_burnin')
     # os.chdir("DIRECTORY YOU WANT TO SAVE PLOT HERE")
+
+    trace_plot_after_burnin_direc = dir + "/trace_plot_after_burnin"
+    # os.chdir('/Users/oburke/Documents/LISA_Science/Tutorials/Bayesian_Statistics_Tutorial/MCMC/plots/still_images_waveform_plots')
+    os.chdir(trace_plot_after_burnin_direc)
 
     samples = [np.log10(a_chain), np.log10(f_chain), np.log10(fdot_chain)]
     true_vals_for_plot = [np.log10(true_vals[0]),np.log10(true_vals[1]), np.log10(true_vals[2])]
@@ -117,7 +129,12 @@ def trace_plot_after_burnin(j4,a_chain,f_chain,fdot_chain,true_vals,Ntotal,burni
     j4+=1
     return j4
 
-def corner_plot_after_burnin(j5,true_vals,a_chain,f_chain,fdot_chain,burnin,params,a_prop,f_prop,fdot_prop,N_param):
+def corner_plot_after_burnin(j5,true_vals,a_chain,f_chain,fdot_chain,burnin,params,a_prop,f_prop,fdot_prop,N_param,dir):
+
+    joint_post_direc = dir + "/joint_post"
+    # os.chdir('/Users/oburke/Documents/LISA_Science/Tutorials/Bayesian_Statistics_Tutorial/MCMC/plots/still_images_waveform_plots')
+    os.chdir(joint_post_direc)
+
     true_vals_for_plot = [np.log10(true_vals[0]),np.log10(true_vals[1]), np.log10(true_vals[2])]
     os.chdir('/Users/oburke/Documents/LISA_Science/Tutorials/Bayesian_Statistics_Tutorial/MCMC/plots/still_images_joint_post')
     a_chain_log = np.log10(a_chain[burnin:])

@@ -56,12 +56,13 @@ def accept_reject(lp_prop, lp_prev):
         return(0)  # Reject
 
 def MCMC_run(data_f, t, variance_noise_f,
-                   Ntotal, burnin, param_start, true_vals, printerval, save_interval,
+                   Ntotal, burnin, param_start, true_vals, Generate_Plots, printerval, save_interval,
                    a_var_prop, f_var_prop, fdot_var_prop):
     '''
     Metropolis MCMC sampler
     '''
     
+    plot_direc = os.getcwd() + "/new_plots"
     # Set starting values
 
     a_chain = [param_start[0]]
@@ -104,7 +105,7 @@ def MCMC_run(data_f, t, variance_noise_f,
     accept_reject_count = [1]
 
     for i in range(1, Ntotal):
-
+        
         if i % printerval == 0: # Print accept/reject ratio.
             print("i = ", i, "accept_reject =",sum(accept_reject_count)/len(accept_reject_count))
 
@@ -142,18 +143,19 @@ def MCMC_run(data_f, t, variance_noise_f,
             # plt.clf()
             # j+=1
 
-        norm = np.sqrt(sum((abs(signal_prop_f)**2) / variance_noise_f))
-        matched_filter = (1/norm) * np.real(sum(np.conjugate(signal_prop_f)*data_f / variance_noise_f))
-        matched_filter_vec.append(matched_filter)
-
-        if i % save_interval == 0:
-            if i <= burnin:
-                j1 = waveform_plot(j1, t, t_hour, true_vals, a_prop, f_prop, fdot_prop,noise_t_plot)
-                j2 = matched_filter_plot(j2, matched_filter_vec, opt_SNR, burnin)
-                j3 = trace_plot_before_burnin(j3,a_chain,f_chain,fdot_chain,true_vals,Ntotal,burnin)
-            else:
-                j4 = trace_plot_after_burnin(j4,a_chain,f_chain,fdot_chain,true_vals,Ntotal,burnin)
-                j5 = corner_plot_after_burnin(j5, true_vals,a_chain,f_chain,fdot_chain,burnin,params,a_prop,f_prop,fdot_prop,N_param)
+        if Generate_Plots:
+            norm = np.sqrt(sum((abs(signal_prop_f)**2) / variance_noise_f))
+            matched_filter = (1/norm) * np.real(sum(np.conjugate(signal_prop_f)*data_f / variance_noise_f))
+            matched_filter_vec.append(matched_filter)
+            if i % save_interval == 0:
+                if i <= burnin:
+                    j1 = waveform_plot(j1, t, t_hour, true_vals, a_prop, f_prop, fdot_prop,noise_t_plot, dir = plot_direc)  # Save still images of waveforms
+                    j2 = matched_filter_plot(j2, matched_filter_vec, opt_SNR, burnin, dir = plot_direc)                     # Save still images of matched filter
+                    j3 = trace_plot_before_burnin(j3,a_chain,f_chain,fdot_chain,true_vals,Ntotal,burnin, dir = plot_direc)  # Save still images of trace plot
+                else:
+                    j4 = trace_plot_after_burnin(j4,a_chain,f_chain,fdot_chain,true_vals,Ntotal,burnin, dir = plot_direc)   # Save still images of trace plot before burnin
+                    j5 = corner_plot_after_burnin(j5, true_vals,a_chain,f_chain,fdot_chain,burnin,params,
+                                                a_prop,f_prop,fdot_prop,N_param,dir = plot_direc)                        # Save still images ofcorner plot after burnin 
 
         lp_prev = lp_store  # Call previous stored log posterior
         

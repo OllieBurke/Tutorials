@@ -2,20 +2,17 @@
 
 # Created ~ 23:00 on 8th September, 2020.
 
-import sys
 import numpy as np
 import matplotlib.pyplot as plt
-import time
 from scipy import signal
-import os
-import warnings
 
 from LISA_utils import PowerSpectralDensity, FFT, freq_PSD, inner_prod, waveform
 from mcmc_fun import MCMC_run
 from plotting_code import plot_PSD
 
-np.random.seed(1234)
 
+Generate_Plots = True
+np.random.seed(1234)
 np.random.seed(0)
 
 # Set true parameters
@@ -38,9 +35,6 @@ h_true_f = FFT(waveform(a_true,f_true,fdot_true,t))         # Compute true signa
                                                             # positive frequencies here.
 
 freq,PSD = freq_PSD(t,delta_t)  # Extract frequency bins and PSD.
-
-# plot_PSD(PSD,h_true_f,freq,delta_t)
-# Compute SNR
 
 SNR2 = inner_prod(h_true_f,h_true_f,PSD,delta_t,N_t)    # Compute optimal matched filtering SNR
 print("SNR of source",np.sqrt(SNR2))
@@ -73,5 +67,6 @@ a_chain,f_chain,fdot_chain,lp  = MCMC_run(data_f, t, variance_noise_f,
                             printerval = 500, save_interval = 50, 
                             a_var_prop = delta_a**2,
                             f_var_prop = delta_f**2,
-                            fdot_var_prop = delta_dotf**2)  
+                            fdot_var_prop = delta_dotf**2
+                            Generate_Plots = False)  
 breakpoint()   # Set breakpoint to investigate samples for a, f and \dot{f}.
