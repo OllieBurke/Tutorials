@@ -3,8 +3,7 @@ from scipy.signal import tukey
 
 def PowerSpectralDensity(f):
     """
-    PSD obtained from: https://arxiv.org/pdf/1803.01944.pdf
-    
+    PSD obtained from: https://arxiv.org/pdf/1803.01944.pdf 
     Removed galactic confusion noise. Non stationary effect.
     """        
     
@@ -55,10 +54,10 @@ def inner_prod(sig1_f,sig2_f,PSD,delta_t,N_t):
 
 def waveform(a,f,fdot,t,eps = 0):
     """
-    This is a function. It takes in a value of the amplitude $a$ and a time vector $t$ and spits out whatever
-    is in the return function. Modify amplitude to improve SNR. Modify frequency range to also affect SNR but 
-    also to see if frequencies of the signal are important for the windowing method. We aim to estimate the parameter
-     --a-- .
+    This is a function. It takes in a value of the amplitude $a$, frequency $f$ and frequency derivative $\dot{f}
+    and a time vector $t$ and spits out whatever is in the return function. Modify amplitude to improve SNR. 
+    Modify frequency range to also affect SNR but also to see if frequencies of the signal are important 
+    for the windowing method. We aim to estimate the parameters $a$, $f$ and $\dot{f}$.
     """
 
     return (a *(np.sin((2*np.pi)*(f*t + 0.5*fdot * t**2))))
