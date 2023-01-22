@@ -12,6 +12,7 @@ import warnings
 
 from LISA_utils import PowerSpectralDensity, FFT, freq_PSD, inner_prod, waveform
 from mcmc_fun import MCMC_run
+from plotting_code import plot_PSD
 
 np.random.seed(1234)
 
@@ -38,35 +39,7 @@ h_true_f = FFT(waveform(a_true,f_true,fdot_true,t))         # Compute true signa
 
 freq,PSD = freq_PSD(t,delta_t)  # Extract frequency bins and PSD.
 
-# os.chdir('/Users/oburke/Documents/LISA_Science/Tutorials/Bayesian_Statistics_Tutorial/MCMC/plots/PSD_plot')
-# plt.figure(figsize = (12,8))
-# plt.loglog(freq,PSD)
-# plt.xlabel(r'Frequency [Hz]', fontsize = 20)
-# plt.ylabel(r'Power Spectral Density [s]', fontsize = 20)
-# plt.title('Plot of the PSD', fontsize = 20)
-# plt.xlim([1e-4,1e-1])
-# plt.ylim([1e-41,1e-32])
-# plt.xticks(fontsize= 16)
-# plt.yticks(fontsize = 16)
-# plt.tight_layout()
-# plt.savefig("PSD_Plot.pdf")
-# plt.clf()
-
-# plt.figure(figsize = (12,8))
-# plt.loglog(freq,2*np.sqrt(freq*abs(delta_t*h_true_f)**2),label = r'$2f\cdot |\hat{h}(f)|$')
-# plt.loglog(freq,np.sqrt(PSD), label = r'$\sqrt{S_{n}(f)}$')
-# plt.legend(fontsize = 20)
-# plt.xlabel(r'Frequency [Hz]', fontsize = 20)
-# plt.ylabel(r'Magnitude - Fourier domain', fontsize = 20)
-# plt.title('Comparison between the PSD and signal', fontsize = 20)
-# plt.xlim([1e-4,1e-1])
-# plt.ylim([1e-30,1e-14])
-# plt.grid()
-# plt.xticks(fontsize= 16)
-# plt.yticks(fontsize = 16)
-# plt.tight_layout()
-# plt.savefig("Comparison_signal_PSD.pdf")
-# plt.show()
+plot_PSD(PSD,h_true_f,freq,delta_t)
 # Compute SNR
 
 SNR2 = inner_prod(h_true_f,h_true_f,PSD,delta_t,N_t)    # Compute optimal matched filtering SNR
@@ -88,17 +61,17 @@ burnin = 0   # Set burn-in. This is the amount of samples we will discard whilst
 
 variance_noise_f = N_t * PSD / (4 * delta_t)
 
-delta_a = np.sqrt(7.8152977583191198e-46)
-delta_f = np.sqrt(3.122370011848878e-17)
-delta_dotf = np.sqrt(1.007508992696005e-27)
+# delta_a = np.sqrt(7.8152977583191198e-46)
+# delta_f = np.sqrt(3.122370011848878e-17)
+# delta_dotf = np.sqrt(1.007508992696005e-27)
 
-param_start = [a_true + 1000*delta_a, f_true + 500*delta_f, fdot_true - 500*delta_dotf]  # Starting values
-true_vals = [a_true,f_true, fdot_true]   # True values
+# param_start = [a_true + 1000*delta_a, f_true + 500*delta_f, fdot_true - 500*delta_dotf]  # Starting values
+# true_vals = [a_true,f_true, fdot_true]   # True values
 
-a_chain,f_chain,fdot_chain,lp  = MCMC_run(data_f, t, variance_noise_f,
-                            Ntotal, param_start,true_vals,
-                            printerval = 500, save_interval = 50, 
-                            a_var_prop = delta_a**2,
-                            f_var_prop = delta_f**2,
-                            fdot_var_prop = delta_dotf**2)  
-breakpoint()   # Set breakpoint to investigate samples for a, f and \dot{f}.
+# a_chain,f_chain,fdot_chain,lp  = MCMC_run(data_f, t, variance_noise_f,
+#                             Ntotal, param_start,true_vals,
+#                             printerval = 500, save_interval = 50, 
+#                             a_var_prop = delta_a**2,
+#                             f_var_prop = delta_f**2,
+#                             fdot_var_prop = delta_dotf**2)  
+# breakpoint()   # Set breakpoint to investigate samples for a, f and \dot{f}.
