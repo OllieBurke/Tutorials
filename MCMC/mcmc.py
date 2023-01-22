@@ -39,7 +39,7 @@ h_true_f = FFT(waveform(a_true,f_true,fdot_true,t))         # Compute true signa
 
 freq,PSD = freq_PSD(t,delta_t)  # Extract frequency bins and PSD.
 
-plot_PSD(PSD,h_true_f,freq,delta_t)
+# plot_PSD(PSD,h_true_f,freq,delta_t)
 # Compute SNR
 
 SNR2 = inner_prod(h_true_f,h_true_f,PSD,delta_t,N_t)    # Compute optimal matched filtering SNR
@@ -56,22 +56,22 @@ data_f = h_true_f + noise_f         # Construct data stream
 # MCMC - parameter estimation
 
 Ntotal = 30000  # Total number of iterations
-burnin = 0   # Set burn-in. This is the amount of samples we will discard whilst looking 
+burnin = 6000   # Set burn-in. This is the amount of samples we will discard whilst looking 
              # for the true parameters
 
 variance_noise_f = N_t * PSD / (4 * delta_t)
 
-# delta_a = np.sqrt(7.8152977583191198e-46)
-# delta_f = np.sqrt(3.122370011848878e-17)
-# delta_dotf = np.sqrt(1.007508992696005e-27)
+delta_a = np.sqrt(7.8152977583191198e-46)
+delta_f = np.sqrt(3.122370011848878e-17)
+delta_dotf = np.sqrt(1.007508992696005e-27)
 
-# param_start = [a_true + 1000*delta_a, f_true + 500*delta_f, fdot_true - 500*delta_dotf]  # Starting values
-# true_vals = [a_true,f_true, fdot_true]   # True values
+param_start = [a_true + 1000*delta_a, f_true + 500*delta_f, fdot_true - 500*delta_dotf]  # Starting values
+true_vals = [a_true,f_true, fdot_true]   # True values
 
-# a_chain,f_chain,fdot_chain,lp  = MCMC_run(data_f, t, variance_noise_f,
-#                             Ntotal, param_start,true_vals,
-#                             printerval = 500, save_interval = 50, 
-#                             a_var_prop = delta_a**2,
-#                             f_var_prop = delta_f**2,
-#                             fdot_var_prop = delta_dotf**2)  
-# breakpoint()   # Set breakpoint to investigate samples for a, f and \dot{f}.
+a_chain,f_chain,fdot_chain,lp  = MCMC_run(data_f, t, variance_noise_f,
+                            Ntotal, burnin, param_start,true_vals,
+                            printerval = 500, save_interval = 50, 
+                            a_var_prop = delta_a**2,
+                            f_var_prop = delta_f**2,
+                            fdot_var_prop = delta_dotf**2)  
+breakpoint()   # Set breakpoint to investigate samples for a, f and \dot{f}.
