@@ -3,6 +3,7 @@ import numpy as np
 import os
 from mcmc_fun import waveform
 from corner import corner
+
 def plot_PSD(PSD,h_true_f,freq,delta_t):
     """
     Here we plot a plot a comparison of the signal in the frequency domain against the PSD.
@@ -136,12 +137,12 @@ def corner_plot_after_burnin(j5,true_vals,a_chain,f_chain,fdot_chain,burnin,para
     os.chdir(joint_post_direc)
 
     true_vals_for_plot = [np.log10(true_vals[0]),np.log10(true_vals[1]), np.log10(true_vals[2])]
-    os.chdir('/Users/oburke/Documents/LISA_Science/Tutorials/Bayesian_Statistics_Tutorial/MCMC/plots/still_images_joint_post')
+    # os.chdir('/Users/oburke/Documents/LISA_Science/Tutorials/Bayesian_Statistics_Tutorial/MCMC/plots/still_images_joint_post')
     a_chain_log = np.log10(a_chain[burnin:])
     f_chain_log = np.log10(np.array(f_chain[burnin:]))
     fdot_chain_log = np.log10(np.array(fdot_chain[burnin:]))
     samples = np.column_stack([a_chain_log,f_chain_log,fdot_chain_log])
-    figure = corner.corner(samples,bins = 30, color = 'blue',plot_datapoints=False,smooth1d=True,
+    figure = corner(samples,bins = 30, color = 'blue',plot_datapoints=False,smooth1d=True,
                         labels=params, 
                         label_kwargs = {"fontsize":12},set_xlabel = {'fontsize': 20},
                         show_titles=True, title_fmt='.7f',title_kwargs={"fontsize": 9},smooth = True)

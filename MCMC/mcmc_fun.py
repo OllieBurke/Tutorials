@@ -2,7 +2,6 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 from LISA_utils import FFT, waveform
-import corner
 
 from plotting_code import (waveform_plot,matched_filter_plot,
                            trace_plot_before_burnin,trace_plot_after_burnin,
@@ -107,7 +106,7 @@ def MCMC_run(data_f, t, variance_noise_f,
     for i in range(1, Ntotal):
         
         if i % printerval == 0: # Print accept/reject ratio.
-            print("i = ", i, "accept_reject =",sum(accept_reject_count)/len(accept_reject_count))
+            print("Iteration ", i, "accept_reject =",sum(accept_reject_count)/len(accept_reject_count))
 
         # if i % save_interval == 0:
         #     true_vals_for_plot = [true_vals[0],np.log10(true_vals[1]), np.log10(true_vals[2])]

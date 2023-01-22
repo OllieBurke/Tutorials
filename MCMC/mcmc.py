@@ -10,8 +10,6 @@ from LISA_utils import PowerSpectralDensity, FFT, freq_PSD, inner_prod, waveform
 from mcmc_fun import MCMC_run
 from plotting_code import plot_PSD
 
-
-Generate_Plots = True
 np.random.seed(1234)
 np.random.seed(0)
 
@@ -49,7 +47,7 @@ data_f = h_true_f + noise_f         # Construct data stream
 
 # MCMC - parameter estimation
 
-Ntotal = 30000  # Total number of iterations
+Ntotal = 10000  # Total number of iterations
 burnin = 6000   # Set burn-in. This is the amount of samples we will discard whilst looking 
              # for the true parameters
 
@@ -67,6 +65,6 @@ a_chain,f_chain,fdot_chain,lp  = MCMC_run(data_f, t, variance_noise_f,
                             printerval = 500, save_interval = 50, 
                             a_var_prop = delta_a**2,
                             f_var_prop = delta_f**2,
-                            fdot_var_prop = delta_dotf**2
-                            Generate_Plots = False)  
+                            fdot_var_prop = delta_dotf**2,
+                            Generate_Plots = True)  
 breakpoint()   # Set breakpoint to investigate samples for a, f and \dot{f}.
