@@ -31,10 +31,11 @@ To execute the code:
 1. Locate the `MCMC` directory 
 2. Source the environment above: `conda activate mcmc_tutorial` 
 3. Run `python mcmc.py`
+4. Once the code has finished executing, it will terminate on a `breakpoint()`. Here you can investigate the samples within your shell.  
 
 ## How to generate movies
                                   
-1. For MACOSX, If you want to create movies you will want to install: `brew install ImageMagick`.
+1. For MACOSX, If you want to create movies you will want to install: `ImageMagick` using a package manager. I usually use brew: ``brew install ImageMagick``.
 2. Create directories for the movies by writing in the shell: `source setup/set_direc` . This will build the relevant directories to save the still images to.
 3. Run the script: `python mcmc.py` with `Generate_Plots = True` in the function `MCMC_run` located in the `mcmc.py` script.
 4. Create the movies by writing in the shell `source setup/make_movies` this may take some time, so be patient. It will also delete the directories that the still images were saved to. 
