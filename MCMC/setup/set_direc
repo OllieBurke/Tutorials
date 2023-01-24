@@ -1,8 +1,0 @@
-mkdir plots
-
-mkdir plots/matched_filter
-mkdir plots/trace_plot_before_burnin
-mkdir plots/trace_plot_after_burnin
-mkdir plots/waveform_plot
-mkdir plots/joint_post
-
