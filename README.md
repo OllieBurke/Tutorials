@@ -6,7 +6,7 @@ $$ h(t;a,f,\dot{f}) = a \sin \left(2\pi t \left[f + \frac{1}{2}\dot{f}t\right]\r
 and we aim to estimate the parameter set $\boldsymbol{\theta} = \{a,f,\dot{f}\}$ using various samplers
 
 ## Code structure
-In this repository there exists two directories, one called `metropolis` and the other called `eryn`. The first is a basic metropolise MCMC algorithm that can be used to teach the basics of simple samplers. The second is Eryn, developed by Michael Katz, Nikos Karnesis, Natalia Korsokova and Jonathan Gair. Built off `emcee` with extra fantstic features such as reversible jump MCMC [unknown number of signals with unknown number of parameters] and parallel tempering. The documentation can be found [here](https://mikekatz04.github.io/Eryn/html/user/ensemble.html).
+In this repository there exists two directories, one called `metropolis` and the other called `eryn`. The first is a basic metropolise MCMC algorithm that can be used to teach the basics of simple samplers. The second is Eryn, developed by Michael Katz, Nikos Karnesis, Natalia Korsokova and Jonathan Gair. Built off `emcee` with extra fantastic features such as reversible jump MCMC [unknown number of signals with unknown number of parameters] and parallel tempering. The documentation can be found [here](https://mikekatz04.github.io/Eryn/html/user/ensemble.html).
 
 ## Getting started
 1. Install Anaconda if you do not have it.
@@ -14,7 +14,8 @@ In this repository there exists two directories, one called `metropolis` and the
 
     > `conda create -n mcmc_tutorial -c conda-forge numpy scipy matplotlib astropy corner tqdm jupyter 
     conda activate mcmc_tutorial`
-3. If you intend to use `eryn` then after step 2 type into the shell `pip install git+https://github.com/mikekatz04/Eryn.git`
+3. If you intend to use `eryn` then after step 2 type into the shell 
+   > `pip install git+https://github.com/mikekatz04/Eryn.git`
 
 
 ## The code structure -- metropolis
@@ -54,6 +55,6 @@ To execute the code:
 To execute the code:
 1. Locate the `eryn` directory
 2. source the environment above `conda activate mcmc_tutorial`
-3. Run pyton `mcmc_run.py`
+3. Run python `mcmc_run.py`
 4. A backend will be saved with some file name. Opening `jupyter notebook Analyse_samples.ipynb` will describe how to generate corner plots and trace plots.
 
