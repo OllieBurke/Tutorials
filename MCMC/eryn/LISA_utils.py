@@ -5,6 +5,8 @@ def PowerSpectralDensity(f):
     """
     PSD obtained from: https://arxiv.org/pdf/1803.01944.pdf 
     Removed galactic confusion noise. Non stationary effect.
+
+    Toy PSD for now. Not using A,E or T.
     """        
     
     L = 2.5*10**9   # Length of LISA arm

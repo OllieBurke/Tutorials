@@ -83,60 +83,81 @@ noise_f = np.random.normal(0,np.sqrt(variance_noise_f),N_f) + 1j*np.random.norma
 
 data_f = h_true_f + 0*noise_f         # Construct data stream
 
-llike_kwargs = {"T_obs":t, "data_stream":data_f, "variance_noise_f":variance_noise_f}
-
-ndim = 3
-nwalkers = 100
 
 delta_a = np.sqrt(7.8152977583191198e-46)
 delta_f = np.sqrt(3.122370011848878e-17)
 delta_dotf = np.sqrt(1.007508992696005e-27)
 
+ndim = 3               # Dimension of parameter space
+nwalkers = 100         # Number of walkers used to explore parameter space
+
+ntemps = 5             # Number of temperatures used for parallel tempering scheme.
+                       # Each group of walkers (equal to nwalkers) is assigned a temperature from T = 1, ... , ntemps.
+
+tempering_kwargs=dict(ntemps=ntemps)  # Sampler requires the number of temperatures as a dictionary
+
+nsteps = 500                          # Number of saved iterations PER walker. Number of samples = nsteps * nwalkers
+          
+burn = 0                              # Set burn in. This number will discard "burn" from every walker chain. 
+                                      # For example, in the final set of samples, you will have nwalkers * (nsteps - burn)
+# thin by 5
+thin_by = 5                           # Pick 1 walker. We save an interation after "thin_by" iterations have been made. 
+                                      # Total number of iterations: nwalkers * nsteps * thin_by. We will only save 
+                                      # nsteps * nwalkers.
+
+# Starting values. Here I know (from previous simulations) roughly what the width of the likelihood is at the true parameters
+# We need to assign a (different) starting value to every walker. We generate a starting value, multiply that by a 
+# random number \in (1,2) and shape this to so it's a row vector with nwalkers elements. We do this for each parameter.
 
 start_a = true_params[0]*(1 + delta_a/true_params[0] * np.random.uniform(1,2,size = nwalkers).reshape(nwalkers,1))
 start_f = true_params[1]*(1 + delta_f/true_params[1] * np.random.uniform(1,2,size = nwalkers).reshape(nwalkers,1))
 start_fdot = true_params[2]*(1 + delta_dotf/true_params[2] * np.random.uniform(1,2,size = nwalkers).reshape(nwalkers,1))
 
+# We stack the starting values to be used with the ensemble sampler
 start_params = np.hstack([start_a,start_f,start_fdot])
 
+if ntemps > 1:
+    # If we decide to use parallel tempering, we fall into this if statement. We assign each *group* of walkers
+    # an associated temperature. We take the original starting values and "stack" them on top of each other. 
 
+    # Imagine this: You have a cube with dimensions x, y, z. x represents the number of parameters, y represents
+    # the number of walkers, and z represents the number of temperatures. This simply takes the "start_params"
+    # variable above and stacks it ontop of itself 5 times. 
+    start_params = np.tile(start_params,(ntemps,1,1))
+
+
+# Set priors. 0 corresponds to first parameter, 1 the second and 2 the third. 
+# Manually chosen lower and upper limits. 
 priors_in = {
     0: uniform_dist(5e-23, 5e-19),
     1: uniform_dist(1e-5, 1e-2),
     2: uniform_dist(1e-11, 1e-5)
-}
+}  
 
-priors = ProbDistContainer(priors_in)
+priors = ProbDistContainer(priors_in)   # Set up priors so they can be used with the sampler.
 
-
-from multiprocessing import (get_context,Pool,cpu_count)
-pool = get_context("fork").Pool(10)
-
-
-file_name = "sample_parameters"
-backend = HDFBackend(file_name)
-# start = backend.get_last_sample()
-
-breakpoint()
 # backend.reset(nwalkers, ndim)
 
+# breakpoint()
+from multiprocessing import (get_context,Pool,cpu_count)
+pool = get_context("fork").Pool(10)        # M1 chip -- allows multiprocessing
+
+file_name = "sample_parameters_tempering"  # Set name of backend
+backend = HDFBackend(file_name)            # Initialise backend
+# start = backend.get_last_sample()
+
 ensemble = EnsembleSampler(
-    nwalkers,
+    nwalkers,          
     ndim,
     llike,
     priors,
-    args=[data_f, variance_noise_f],
-    pool = pool,
-    backend = backend
+    args=[data_f, variance_noise_f],   # Arguments in the likelihood function. These are "constant" and do not change in the likelihood.
+    pool = pool,                       # Set up multiprocessing to use all my chains
+    backend = backend,                 # Store samples to a .h5 file
+    tempering_kwargs=tempering_kwargs  # Allow tempering!
 )
 
-nsteps = 500
-# burn for 100 steps
-burn = 0
-# thin by 5
-thin_by = 5
-
-out = ensemble.run_mcmc(start_params, nsteps, burn=burn, progress=True, thin_by=thin_by)
+out = ensemble.run_mcmc(start_params, nsteps, burn=burn, progress=True, thin_by=thin_by)  # Run the sampler
 
 
 breakpoint()
