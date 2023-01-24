@@ -91,7 +91,7 @@ delta_dotf = np.sqrt(1.007508992696005e-27)
 ndim = 3               # Dimension of parameter space
 nwalkers = 100         # Number of walkers used to explore parameter space
 
-ntemps = 5             # Number of temperatures used for parallel tempering scheme.
+ntemps = 1             # Number of temperatures used for parallel tempering scheme.
                        # Each group of walkers (equal to nwalkers) is assigned a temperature from T = 1, ... , ntemps.
 
 tempering_kwargs=dict(ntemps=ntemps)  # Sampler requires the number of temperatures as a dictionary
@@ -142,7 +142,7 @@ priors = ProbDistContainer(priors_in)   # Set up priors so they can be used with
 from multiprocessing import (get_context,Pool,cpu_count)
 pool = get_context("fork").Pool(10)        # M1 chip -- allows multiprocessing
 
-file_name = "sample_parameters_tempering"  # Set name of backend
+file_name = "sample_parameters_no_tempering"  # Set name of backend
 backend = HDFBackend(file_name)            # Initialise backend
 # start = backend.get_last_sample()
 
@@ -158,7 +158,6 @@ ensemble = EnsembleSampler(
 )
 
 out = ensemble.run_mcmc(start_params, nsteps, burn=burn, progress=True, thin_by=thin_by)  # Run the sampler
-
 
 breakpoint()
 
