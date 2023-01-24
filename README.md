@@ -48,7 +48,7 @@ To execute the code:
 ## The code structure -- eryn
 
 1. The script `LISA_utils.py` is a utility script containing useful python functions. Such functions include an approximate parametric model for the LISA power spectral density, for example.
-2. The script `mcmc.py` executes eryn with the choice to use parallel tempering.
+2. The script `mcmc_run.py` executes eryn with the choice to use parallel tempering.
 
 ### How to use the code
 
