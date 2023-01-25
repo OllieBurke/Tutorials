@@ -85,11 +85,12 @@ def trace_plot_before_burnin(j3,a_chain,f_chain,fdot_chain,true_vals,Ntotal,burn
     color = ['green','black','purple']
     fig,ax = plt.subplots(3,1)
     for k in range(0,3):
-        ax[k].plot(samples[k], color = color[k])
+        ax[k].plot(samples[k], color = color[k],label = "Accepted points")
         ax[k].plot(true_vals_for_plot[k]*np.ones(Ntotal),c = 'red',label = 'True value')
         ax[k].set_xlabel('Iteration',fontsize = 10)
         ax[k].set_ylabel(param_label[k], fontsize = 10)
         ax[k].set_xlim([0,burnin])
+        ax[k].legend(loc = "upper right",fontsize = 12)
     ax[0].set_title("Trace plots")
 
     plt.tight_layout()
@@ -115,12 +116,13 @@ def trace_plot_after_burnin(j4,a_chain,f_chain,fdot_chain,true_vals,Ntotal,burni
     max_min_vec = [[np.log10(4.9294905743897544e-21),np.log10(5.099693103613413e-21)], [np.log10(0.000999963664760359), np.log10(0.0010000495624500195)],
             [np.log10(9.999679979840393e-09),np.log10(1.0000217263850467e-08)]]
     for k in range(0,3):
-        ax[k].plot(samples[k], color = color[k])
+        ax[k].plot(samples[k], color = color[k],label = "Accepted points")
         ax[k].plot(true_vals_for_plot[k]*np.ones(Ntotal),c = 'red',label = 'True value')
         ax[k].set_xlabel('Iteration',fontsize = 10)
         ax[k].set_ylabel(param_label[k], fontsize = 10)
         ax[k].set_ylim([max_min_vec[k][0], max_min_vec[k][1]])
         ax[k].set_xlim([burnin,Ntotal])
+        ax[k].legend(loc = "upper right", fontsize = 12)
     ax[0].set_title("Trace plots")
 
     plt.tight_layout()

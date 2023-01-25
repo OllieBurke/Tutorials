@@ -48,7 +48,7 @@ data_f = h_true_f + noise_f         # Construct data stream
 # MCMC - parameter estimation
 
 Ntotal = 30000  # Total number of iterations
-burnin = 10000   # Set burn-in. This is the amount of samples we will discard whilst looking 
+burnin = 6000   # Set burn-in. This is the amount of samples we will discard whilst looking 
              # for the true parameters
 
 variance_noise_f = N_t * PSD / (4 * delta_t)
@@ -66,5 +66,5 @@ a_chain,f_chain,fdot_chain,lp  = MCMC_run(data_f, t, variance_noise_f,
                             a_var_prop = delta_a**2,
                             f_var_prop = delta_f**2,
                             fdot_var_prop = delta_dotf**2,
-                            Generate_Plots = False)  
+                            Generate_Plots = True)  
 breakpoint()   # Set breakpoint to investigate samples for a, f and \dot{f}.
