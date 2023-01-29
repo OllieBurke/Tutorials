@@ -110,47 +110,10 @@ for i in range(N_params):
 Cov_Matrix = np.linalg.inv(Fisher_Matrix)
 
 precision = np.sqrt(np.diag(Cov_Matrix))
-# Investigation
 
-eig,eig_vec = np.linalg.eig(Cov_Matrix)
+Correl_Matrix = np.eye(N_params)
 
-def elipse(center,sd_x, sd_y, scale):
-    u = center[0]
-    v = center[1]
-    a = sd_x
-    b = sd_y
-    s = scale
-
-    t = np.linspace(0, 2*np.pi, 100)
-    x = u+a*s*np.cos(t) 
-    y = v+b*s*np.sin(t) 
-    plt.plot(x,y)
-    plt.show()
-
-elipse([true_params[0],true_params[1]],precision[0],precision[1],5.991)
-
-
-
-# from math import pi, cos, sin
-
-# u=1.       #x-position of the center
-# v=0.5      #y-position of the center
-# a=2.       #radius on the x-axis
-# b=1.5      #radius on the y-axis
-# t_rot=pi/4 #rotation angle
-
-# t = np.linspace(0, 2*pi, 100)
-# Ell = np.array([a*np.cos(t) , b*np.sin(t)])  
-#      #u,v removed to keep the same center location
-# R_rot = np.array([[cos(t_rot) , -sin(t_rot)],[sin(t_rot) , cos(t_rot)]])  
-#      #2-D rotation matrix
-
-# Ell_rot = np.zeros((2,Ell.shape[1]))
-# for i in range(Ell.shape[1]):
-#     Ell_rot[:,i] = np.dot(R_rot,Ell[:,i])
-
-# plt.plot( u+Ell[0,:] , v+Ell[1,:] )     #initial ellipse
-# plt.plot( u+Ell_rot[0,:] , v+Ell_rot[1,:],'darkorange' )    #rotated ellipse
-# plt.grid(color='lightgray',linestyle='--')
-# plt.show()
+for i in range(N_params):
+    for j in range(N_params):
+        Correl_Matrix[i,j] = Fisher_Matrix[i,j]/(Fisher_Matrix[i,i]**(1/2) * Fisher_Matrix[j,j]**(1/2))
 
