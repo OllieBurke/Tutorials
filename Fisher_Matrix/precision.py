@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 from matplotlib.patches import Ellipse
+import matplotlib.transforms as transforms
 import numpy as np
 
 
@@ -23,7 +24,7 @@ def waveform(params):
 
     return (a *(np.sin((2*np.pi)*(f*t + 0.5*fdot * t**2))))
 
-def waveform_deriv(params,phi):
+def deriv_waveform(params,phi):
     """
     This is a function. It takes in a value of the amplitude $a$, frequency $f$ and frequency derivative $\dot{f}
     and a time vector $t$ and spits out whatever is in the return function. Modify amplitude to improve SNR. 
@@ -34,7 +35,62 @@ def waveform_deriv(params,phi):
     f = params[1]
     fdot = params[2]
 
-    return (a *(np.sin((2*np.pi)*(f*t + 0.5*fdot * t**2) + phi)))
+    return (a *(np.sin((2*np.pi)*(f*t + 0.5*fdot * t**2) + phi) ))
+
+
+def confidence_ellipse(cov, center, ax, n_std=3.0, facecolor='none', **kwargs):
+    """
+    Create a plot of the covariance confidence ellipse of *x* and *y*.
+
+    Parameters
+    ----------
+    x, y : array-like, shape (n, )
+        Input data.
+
+    ax : matplotlib.axes.Axes
+        The axes object to draw the ellipse into.
+
+    n_std : float
+        The number of standard deviations to determine the ellipse's radiuses.
+
+    **kwargs
+        Forwarded to `~matplotlib.patches.Ellipse`
+
+    Returns
+    -------
+    matplotlib.patches.Ellipse
+    """
+
+    pearson = cov[0, 1]/np.sqrt(cov[0, 0] * cov[1, 1])
+    print(pearson)
+    # Using a special case to obtain the eigenvalues of this
+    # two-dimensional dataset.
+    ell_radius_x = np.sqrt(1 + pearson)
+    ell_radius_y = np.sqrt(1 - pearson)
+    ellipse = Ellipse((0, 0), width=ell_radius_x * 2, height=ell_radius_y * 2,
+                      facecolor=facecolor, **kwargs)
+
+    # Calculating the standard deviation of x from
+    # the squareroot of the variance and multiplying
+    # with the given number of standard deviations.
+    scale_x = np.sqrt(cov[0, 0]) * n_std
+    mean_x = center[0]
+
+    # calculating the standard deviation of y ...
+    scale_y = np.sqrt(cov[1, 1]) * n_std
+    mean_y = center[1]
+
+    eig,vec = np.linalg.eig(cov)  # Eigenvalues are the standard deviations
+
+    vec_0 = vec[:,0] ; vec_1 = vec[:,1]
+    alpha = np.arctan2(np.linalg.norm(vec_0),np.linalg.norm(vec_1))*(180/np.pi)  # Convert to degrees
+    transf = transforms.Affine2D() \
+        .rotate_deg(alpha) \
+        .scale(scale_x, scale_y) \
+        .translate(mean_x, mean_y)
+
+    ellipse.set_transform(transf + ax.transData)
+    return ax.add_patch(ellipse)
 
 def llike(params, data_f, variance_noise_f):
     """
@@ -92,16 +148,16 @@ data_f = h_true_f + 0*noise_f         # Construct data stream
 
 # Compute FM
 
-exact_deriv_a = (a_true)** -1  * waveform_deriv(true_params, 0)
-exact_deriv_a_fft = FFT(exact_deriv_a)
+exact_deriv_a = (a_true)** -1  * deriv_waveform(true_params, 0)
+deriv_a_fft = FFT(exact_deriv_a)
 
-exact_deriv_f = (2*np.pi*t) * waveform_deriv(true_params, np.pi/2)
-exact_deriv_f_fft = FFT(exact_deriv_f)
+exact_deriv_f = (2*np.pi*t) * deriv_waveform(true_params, np.pi/2)
+deriv_f_fft = FFT(exact_deriv_f)
 
-exact_deriv_fdot = (0.5) * (2*np.pi * t**2) * waveform_deriv(true_params, np.pi/2)
-exact_deriv_fdot_fft = FFT(exact_deriv_fdot)
+exact_deriv_fdot = (0.5) * (2*np.pi * t**2) * deriv_waveform(true_params, np.pi/2)
+deriv_fdot_fft = FFT(exact_deriv_fdot)
 
-deriv_vec = [exact_deriv_a_fft, exact_deriv_f_fft, exact_deriv_fdot_fft]
+deriv_vec = [deriv_a_fft, deriv_f_fft, deriv_fdot_fft]
 Fisher_Matrix = np.eye(N_params)
 for i in range(N_params):
     for j in range(N_params):
@@ -116,4 +172,34 @@ Correl_Matrix = np.eye(N_params)
 for i in range(N_params):
     for j in range(N_params):
         Correl_Matrix[i,j] = Fisher_Matrix[i,j]/(Fisher_Matrix[i,i]**(1/2) * Fisher_Matrix[j,j]**(1/2))
+
+fig, ax = plt.subplots(2,2, figsize = (16,8))
+
+Cov_Matrix_A_f = Cov_Matrix[0:2,0:2]
+Cov_Matrix_A_fdot = np.delete(np.delete(Cov_Matrix,1,axis = 0),1,axis = 1)
+
+Cov_Matrix_f_fdot = Cov_Matrix[1:3,1:3]
+
+center_A_f = [true_params[0], true_params[1]]
+center_A_fdot = [true_params[0],true_params[2]]
+
+center_f_fdot = [true_params[1],true_params[2]]
+
+draw_A_f = np.random.multivariate_normal(center_A_f,Cov_Matrix_A_f,1000)
+draw_A_fdot = np.random.multivariate_normal(center_A_fdot,Cov_Matrix_A_fdot,1000)
+draw_f_fdot = np.random.multivariate_normal(center_f_fdot,Cov_Matrix_f_fdot,1000)
+
+ax[0,0].scatter(draw_A_f[:,0],draw_A_f[:,1])
+ax[1,0].scatter(draw_A_fdot[:,0],draw_A_fdot[:,1])
+ax[1,1].scatter(draw_f_fdot[:,0],draw_f_fdot[:,1])
+
+colors = ['red','blue','green']
+for i in range(1,4):
+    confidence_ellipse(Cov_Matrix_A_f, center_A_f, ax[0,0], n_std=i, edgecolor=colors[i - 1])
+    confidence_ellipse(Cov_Matrix_A_fdot, center_A_fdot, ax[1,0], n_std=i, edgecolor=colors[i - 1])
+    confidence_ellipse(Cov_Matrix_f_fdot, center_f_fdot, ax[1,1], n_std=i, edgecolor=colors[i - 1])
+
+fig.delaxes(ax[0,1])
+plt.show()
+
 
