@@ -1,5 +1,5 @@
 # Tutorials
-This code uses a Metropolis Markov-Chain Monte-Carlo algorithm in order to sample parameters of a toy gravitational wave signal buried in coloured LISA like noise. The waveform model we will use is
+This code uses a Markov-Chain Monte-Carlo algorithms in order to sample parameters of a toy gravitational wave signal buried in coloured LISA like noise. The waveform model we will use is
 
 $$ h(t;a,f,\dot{f}) = a \sin \left(2\pi t \left[f + \frac{1}{2}\dot{f}t\right]\right) $$
 
