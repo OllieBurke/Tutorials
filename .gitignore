@@ -1,3 +1,6 @@
+.DS_Store
 /MCMC/metropolis/plots
 /MCMC/metropolis/movies
 /MCMC/eryn/samples
+/MCMC/eryn/__pycache__
+/MCMC/eryn/.ipynb_checkpoints
