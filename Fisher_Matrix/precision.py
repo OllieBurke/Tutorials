@@ -37,6 +37,8 @@ def deriv_waveform(params,phi):
 
     return (a *(np.sin((2*np.pi)*(f*t + 0.5*fdot * t**2) + phi) ))
 
+def Gaussian(values,mean,std):
+    return np.exp(-(values - mean)**2 / (2*std**2))
 
 def confidence_ellipse(cov, center, ax, n_std=3.0, facecolor='none', **kwargs):
     """
@@ -62,7 +64,7 @@ def confidence_ellipse(cov, center, ax, n_std=3.0, facecolor='none', **kwargs):
     """
 
     pearson = cov[0, 1]/np.sqrt(cov[0, 0] * cov[1, 1])
-    print(pearson)
+
     # Using a special case to obtain the eigenvalues of this
     # two-dimensional dataset.
     ell_radius_x = np.sqrt(1 + pearson)
@@ -173,7 +175,7 @@ for i in range(N_params):
     for j in range(N_params):
         Correl_Matrix[i,j] = Fisher_Matrix[i,j]/(Fisher_Matrix[i,i]**(1/2) * Fisher_Matrix[j,j]**(1/2))
 
-fig, ax = plt.subplots(2,2, figsize = (16,8))
+fig, ax = plt.subplots(3,3, figsize = (16,8))
 
 Cov_Matrix_A_f = Cov_Matrix[0:2,0:2]
 Cov_Matrix_A_fdot = np.delete(np.delete(Cov_Matrix,1,axis = 0),1,axis = 1)
@@ -189,17 +191,30 @@ draw_A_f = np.random.multivariate_normal(center_A_f,Cov_Matrix_A_f,1000)
 draw_A_fdot = np.random.multivariate_normal(center_A_fdot,Cov_Matrix_A_fdot,1000)
 draw_f_fdot = np.random.multivariate_normal(center_f_fdot,Cov_Matrix_f_fdot,1000)
 
-ax[0,0].scatter(draw_A_f[:,0],draw_A_f[:,1])
-ax[1,0].scatter(draw_A_fdot[:,0],draw_A_fdot[:,1])
-ax[1,1].scatter(draw_f_fdot[:,0],draw_f_fdot[:,1])
+ax[1,0].scatter(draw_A_f[:,0],draw_A_f[:,1])
+ax[2,0].scatter(draw_A_fdot[:,0],draw_A_fdot[:,1])
+ax[2,1].scatter(draw_f_fdot[:,0],draw_f_fdot[:,1])
 
 colors = ['red','blue','green']
 for i in range(1,4):
-    confidence_ellipse(Cov_Matrix_A_f, center_A_f, ax[0,0], n_std=i, edgecolor=colors[i - 1])
-    confidence_ellipse(Cov_Matrix_A_fdot, center_A_fdot, ax[1,0], n_std=i, edgecolor=colors[i - 1])
-    confidence_ellipse(Cov_Matrix_f_fdot, center_f_fdot, ax[1,1], n_std=i, edgecolor=colors[i - 1])
+    confidence_ellipse(Cov_Matrix_A_f, center_A_f, ax[1,0], n_std=i, edgecolor=colors[i - 1])
+    confidence_ellipse(Cov_Matrix_A_fdot, center_A_fdot, ax[2,0], n_std=i, edgecolor=colors[i - 1])
+    confidence_ellipse(Cov_Matrix_f_fdot, center_f_fdot, ax[2,1], n_std=i, edgecolor=colors[i - 1])
 
 fig.delaxes(ax[0,1])
-plt.show()
+fig.delaxes(ax[0,2])
+fig.delaxes(ax[1,2])
 
+
+
+range_values = [np.arange(true_params[i] - 5*precision[i], true_params[i] + 5*precision[i],precision[i]/100) for i in range(N_params)]
+# breakpoint()
+
+pdfs = [Gaussian(range_values[i],true_params[i],precision[i]) for i in range(N_params)]
+# for j in range(N_params):
+for j in range(N_params):
+    ax[j,j].plot(range_values[j],pdfs[j])
+
+plt.show()
+plt.tight_layout()
 
