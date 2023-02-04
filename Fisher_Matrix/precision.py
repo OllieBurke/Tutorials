@@ -175,7 +175,7 @@ for i in range(N_params):
     for j in range(N_params):
         Correl_Matrix[i,j] = Fisher_Matrix[i,j]/(Fisher_Matrix[i,i]**(1/2) * Fisher_Matrix[j,j]**(1/2))
 
-fig, ax = plt.subplots(3,3, figsize = (16,8))
+fig, ax = plt.subplots(3,3, sharex = 'col', figsize = (16,8))
 
 Cov_Matrix_A_f = Cov_Matrix[0:2,0:2]
 Cov_Matrix_A_fdot = np.delete(np.delete(Cov_Matrix,1,axis = 0),1,axis = 1)
@@ -207,13 +207,21 @@ fig.delaxes(ax[1,2])
 
 
 
-range_values = [np.arange(true_params[i] - 5*precision[i], true_params[i] + 5*precision[i],precision[i]/100) for i in range(N_params)]
+range_values = [np.arange(true_params[i] - 3*precision[i], true_params[i] + 3*precision[i],precision[i]/100) for i in range(N_params)]
 # breakpoint()
 
 pdfs = [Gaussian(range_values[i],true_params[i],precision[i]) for i in range(N_params)]
 # for j in range(N_params):
 for j in range(N_params):
     ax[j,j].plot(range_values[j],pdfs[j])
+
+ax[2,0].set_xlabel(r'Amplitude: $a$')
+ax[2,1].set_xlabel(r'Frequency: $f$')
+ax[2,2].set_xlabel(r'Frequency derivative: $\dot{f}$')
+
+ax[1,0].set_ylabel(r'Frequency: $f$')
+ax[2,0].set_ylabel(r'Frequency: $\dot{f}$')
+
 
 plt.show()
 plt.tight_layout()

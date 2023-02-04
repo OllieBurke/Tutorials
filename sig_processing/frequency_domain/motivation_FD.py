@@ -2,6 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 
+def signal_gen_harmonics(harmonics, freq = 1):
+    gen_signal = [np.cos(2*np.pi*(n+1)*1*t) for n in range(0,harmonics)]
+    return sum(gen_signal)
+
 # os.chdir('/Users/oburke/Documents/LISA_Science/Tutorials/Bayesian_Statistics_Tutorial/sig_processing/frequency_domain/plots')
 highest_frequency = 40
 delta_t = (1/(2*highest_frequency))    # Sampling interval - change the 14 to one of {3,5,7,11,13} and look at the difference.
@@ -16,11 +20,15 @@ signal4 = 1*np.cos(2*np.pi*4*t)
 signal5 = 1*np.cos(2*np.pi*5*t) #  Individual signals of different harmonics m = {3,5,7,11,13}.
 
 signal = signal1 + signal2 + signal3 + signal4 + signal5 # Superposition of individual harmonics of signals - sound familiar?
-                                                                                               # self explanatory
+                  
+harmonics = 1
+signal =  signal_gen_harmonics(harmonics,t)                                                                            # self explanatory
 
-plt.plot(t,signal);plt.xlabel(r'$time [seconds]$',fontsize = 15);plt.ylabel(r'Amplitude',fontsize = 15);plt.title('Plot of sinusoid - time domain',fontsize = 15);plt.tight_layout();
+plt.plot(t,signal);plt.xlabel(r'$time [seconds]$',fontsize = 15);plt.ylabel(r'Amplitude',fontsize = 15);plt.title('Plot of sinusoid - 1 harmonics',fontsize = 15);plt.tight_layout();
 # plt.savefig("time_domain_sig.pdf")
+plt.show()
 plt.clf()
+
 
 
 n_t = len(signal) # length of signal in the time domain
@@ -96,21 +104,21 @@ def compute_snr_timeseries(filter, data, psd, dt):
 
 SNR_time, matched_SNR, opt_SNR = compute_snr_timeseries(signal, data, PSD, delta_t)
 
-print(matched_SNR,np.real(opt_SNR))
+# print(matched_SNR,np.real(opt_SNR))
 
-fig, ax = plt.subplots(1,2, figsize = (16,8))
-ax[0].plot(t, abs(SNR_time))
-ax[1].plot(t,signal)
-#ax.plot(data_times[100:-100], abs(snr2.data), alpha = 0.5)
-ax[0].set_xlabel("Time")
-ax[0].set_ylabel("SNR")
+# fig, ax = plt.subplots(1,2, figsize = (16,8))
+# ax[0].plot(t, abs(SNR_time))
+# ax[1].plot(t,signal)
+# #ax.plot(data_times[100:-100], abs(snr2.data), alpha = 0.5)
+# ax[0].set_xlabel("Time")
+# ax[0].set_ylabel("SNR")
 
-ax[1].set_xlabel("Time")
-ax[1].set_ylabel("Amplitude")
-plt.show()
-plt.clf()
+# ax[1].set_xlabel("Time")
+# ax[1].set_ylabel("Amplitude")
+# plt.show()
+# plt.clf()
 
-breakpoint()
+# breakpoint()
 
 # dft_noise = np.fft.fft(noise)
 # plt.stem(freq,np.abs(dft_noise)**2)

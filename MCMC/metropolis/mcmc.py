@@ -66,5 +66,9 @@ a_chain,f_chain,fdot_chain,lp  = MCMC_run(data_f, t, variance_noise_f,
                             a_var_prop = delta_a**2,
                             f_var_prop = delta_f**2,
                             fdot_var_prop = delta_dotf**2,
-                            Generate_Plots = True)  
+                            Generate_Plots = False)  
 breakpoint()   # Set breakpoint to investigate samples for a, f and \dot{f}.
+
+print("delta_a = ", np.sqrt(np.var(a_chain[burnin:])))
+print("delta_f = ", np.sqrt(np.var(f_chain[burnin:])))
+print("delta_fdot = ", np.sqrt(np.var(fdot_chain[burnin:])))
