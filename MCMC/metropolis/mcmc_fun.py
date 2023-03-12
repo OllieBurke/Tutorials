@@ -1,6 +1,7 @@
 import numpy as np 
 import os
 import matplotlib.pyplot as plt
+from tqdm import tqdm
 from LISA_utils import FFT, waveform
 
 from plotting_code import (waveform_plot,matched_filter_plot,
@@ -55,7 +56,7 @@ def accept_reject(lp_prop, lp_prev):
         return(0)  # Reject
 
 def MCMC_run(data_f, t, variance_noise_f,
-                   Ntotal, burnin, param_start, true_vals, Generate_Plots, printerval, save_interval,
+                   Ntotal, burnin, param_start, true_vals, Generate_Movies, printerval, save_interval,
                    a_var_prop, f_var_prop, fdot_var_prop):
     '''
     Metropolis MCMC sampler
@@ -103,12 +104,15 @@ def MCMC_run(data_f, t, variance_noise_f,
     #####
     accept_reject_count = [1]
 
-    for i in range(1, Ntotal):
+    for i in tqdm(range(1, Ntotal)):
         
         if i % printerval == 0: # Print accept/reject ratio.
-            print("Iteration ", i, "accept_reject =",sum(accept_reject_count)/len(accept_reject_count))
+            # tqdm.write("Iteration ", i, "accept_reject =",sum(accept_reject_count)/len(accept_reject_count))
+            accept_reject_ratio = sum(accept_reject_count)/len(accept_reject_count)
+            tqdm.write("Iteration {0}, accept_reject = {1}".format(i,accept_reject_ratio))
+            # print("Iteration ", i, "accept_reject =",sum(accept_reject_count)/len(accept_reject_count))
 
-        if Generate_Plots:
+        if Generate_Movies:
             norm = np.sqrt(sum((abs(signal_prop_f)**2) / variance_noise_f))
             matched_filter = (1/norm) * np.real(sum(np.conjugate(signal_prop_f)*data_f / variance_noise_f))
             matched_filter_vec.append(matched_filter)
