@@ -11,7 +11,6 @@ def plot_PSD(PSD,h_true_f,freq,delta_t):
     """
 
     os.chdir('/Users/oburke/Documents/LISA_Science/Tutorials/Bayesian_Statistics_Tutorial/MCMC/plots/PSD_plot')
-    # os.chdir("DIRECTORY YOU WANT TO SAVE PLOT HERE")
     plt.figure(figsize = (12,8))
     plt.loglog(freq,2*np.sqrt(freq*abs(delta_t*h_true_f)**2),label = r'$2f\cdot |\hat{h}(f)|$')
     plt.loglog(freq,np.sqrt(PSD), label = r'$\sqrt{S_{n}(f)}$')
@@ -32,10 +31,7 @@ def plot_PSD(PSD,h_true_f,freq,delta_t):
 
 def waveform_plot(j1, t, t_hour, true_vals, a_prop, f_prop, fdot_prop,noise_t_plot, dir):
     waveform_direc = dir + "/waveform_plot"
-    # os.chdir('/Users/oburke/Documents/LISA_Science/Tutorials/Bayesian_Statistics_Tutorial/MCMC/plots/still_images_waveform_plots')
     os.chdir(waveform_direc)
-
-    # os.chdir("DIRECTORY YOU WANT TO SAVE PLOT HERE")
 
     plt.plot(t_hour, noise_t_plot, alpha = 0.7, c = 'grey', label = 'Noise')
     plt.plot(t_hour,waveform(true_vals[0],true_vals[1],true_vals[2],t), alpha = 0.8, c = 'red', label = 'True waveform')
@@ -53,9 +49,7 @@ def waveform_plot(j1, t, t_hour, true_vals, a_prop, f_prop, fdot_prop,noise_t_pl
 
 def matched_filter_plot(j2,matched_filter_vec, opt_SNR, burnin, dir):
     matched_filter_direc = dir + "/matched_filter"
-    # os.chdir('/Users/oburke/Documents/LISA_Science/Tutorials/Bayesian_Statistics_Tutorial/MCMC/plots/still_images_waveform_plots')
     os.chdir(matched_filter_direc)
-    # os.chdir("DIRECTORY YOU WANT TO SAVE PLOT HERE")
 
     plt.plot(matched_filter_vec, label = 'Matched filter SNR')
     plt.axhline(y = opt_SNR, c = 'red', label = 'Optimal SNR')
@@ -73,11 +67,8 @@ def matched_filter_plot(j2,matched_filter_vec, opt_SNR, burnin, dir):
     return j2
 
 def trace_plot_before_burnin(j3,a_chain,f_chain,fdot_chain,true_vals,Ntotal,burnin,dir):
-    # os.chdir('/Users/oburke/Documents/LISA_Science/Tutorials/Bayesian_Statistics_Tutorial/MCMC/plots/still_images_trace_plot_before_burnin')
-    # os.chdir("DIRECTORY YOU WANT TO SAVE PLOT HERE")
-
+    
     trace_plot_before_burnin_direc = dir + "/trace_plot_before_burnin"
-    # os.chdir('/Users/oburke/Documents/LISA_Science/Tutorials/Bayesian_Statistics_Tutorial/MCMC/plots/still_images_waveform_plots')
     os.chdir(trace_plot_before_burnin_direc)
     samples = [np.log10(a_chain), np.log10(f_chain), np.log10(fdot_chain)]
     true_vals_for_plot = [np.log10(true_vals[0]),np.log10(true_vals[1]), np.log10(true_vals[2])]
@@ -101,11 +92,7 @@ def trace_plot_before_burnin(j3,a_chain,f_chain,fdot_chain,true_vals,Ntotal,burn
     return j3
 
 def trace_plot_after_burnin(j4,a_chain,f_chain,fdot_chain,true_vals,Ntotal,burnin,dir):
-    # os.chdir('/Users/oburke/Documents/LISA_Science/Tutorials/Bayesian_Statistics_Tutorial/MCMC/plots/still_images_trace_plot_after_burnin')
-    # os.chdir("DIRECTORY YOU WANT TO SAVE PLOT HERE")
-
     trace_plot_after_burnin_direc = dir + "/trace_plot_after_burnin"
-    # os.chdir('/Users/oburke/Documents/LISA_Science/Tutorials/Bayesian_Statistics_Tutorial/MCMC/plots/still_images_waveform_plots')
     os.chdir(trace_plot_after_burnin_direc)
 
     samples = [np.log10(a_chain), np.log10(f_chain), np.log10(fdot_chain)]
@@ -135,11 +122,9 @@ def trace_plot_after_burnin(j4,a_chain,f_chain,fdot_chain,true_vals,Ntotal,burni
 def corner_plot_after_burnin(j5,true_vals,a_chain,f_chain,fdot_chain,burnin,params,a_prop,f_prop,fdot_prop,N_param,dir):
 
     joint_post_direc = dir + "/joint_post"
-    # os.chdir('/Users/oburke/Documents/LISA_Science/Tutorials/Bayesian_Statistics_Tutorial/MCMC/plots/still_images_waveform_plots')
     os.chdir(joint_post_direc)
 
     true_vals_for_plot = [np.log10(true_vals[0]),np.log10(true_vals[1]), np.log10(true_vals[2])]
-    # os.chdir('/Users/oburke/Documents/LISA_Science/Tutorials/Bayesian_Statistics_Tutorial/MCMC/plots/still_images_joint_post')
     a_chain_log = np.log10(a_chain[burnin:])
     f_chain_log = np.log10(np.array(f_chain[burnin:]))
     fdot_chain_log = np.log10(np.array(fdot_chain[burnin:]))
