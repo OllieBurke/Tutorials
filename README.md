@@ -21,7 +21,7 @@ In this repository there exists two directories, one called `metropolis` and the
 ## The code structure -- metropolis
 1. The script `LISA_utils.py` is a utility script containing useful python functions. Such functions include an approximate parametric model for the LISA power spectral density, for example.
 2. The script `mcmc_func.py` includes the waveform model and scripts used to build the Metropolis sampler.
-3. The script `mcmc.py` executes the metropolis algorithm. Within this script, set `Generate_Plots = True` if you want to create movies as the sampler goes along. 
+3. The script `mcmc.py` executes the metropolis algorithm. Within this script, set `Generate_Movies = True` if you want to create movies as the sampler goes along. 
 4. The script `plotting_code.py` plots important parts of the sampler as it runs. It plots: 
    1. Evolution of the proposed waveform as the points get closer and closer to the true waveform.
    2. The trace plot before burnin.
@@ -35,13 +35,13 @@ To execute the code:
 1. Locate the `metropolis` directory 
 2. Source the environment above: `conda activate mcmc_tutorial` 
 3. Run `python mcmc.py`
-4. Once the code has finished executing, it will terminate on a `breakpoint()`. Here you can investigate the samples within your shell.  
+4. Once the code has finished executing, it will terminate on a `breakpoint()`. Here you can investigate the samples within your shell.   
 
 ### How to generate movies
                                   
 1. For MACOSX, If you want to create movies you will want to install: `ImageMagick` using a package manager. I usually use brew: ``brew install ImageMagick``.
 2. Create directories for the movies by writing in the shell: `source setup/set_direc` . This will build the relevant directories to save the still images to.
-3. Run the script: `python mcmc.py` with `Generate_Plots = True` in the function `MCMC_run` located in the `mcmc.py` script.
+3. Run the script: `python mcmc.py` with `Generate_Movies = True` in the function `MCMC_run` located in the `mcmc.py` script.
 4. Create the movies by writing in the shell `source setup/make_movies` this may take some time, so be patient. It will also delete the directories that the still images were saved to. 
 5. Enjoy your movies! Watch them with your friends and family! 
 
