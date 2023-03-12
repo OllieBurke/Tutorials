@@ -3,17 +3,15 @@
 # Created ~ 23:00 on 8th September, 2020.
 
 import numpy as np
-import matplotlib.pyplot as plt
-from scipy import signal
 
-from LISA_utils import PowerSpectralDensity, FFT, freq_PSD, inner_prod, waveform
+from LISA_utils import FFT, freq_PSD, inner_prod, waveform
 from mcmc_fun import MCMC_run
-from plotting_code import plot_PSD
-
+import matplotlib.pyplot as plt
+from corner import corner
 np.random.seed(1234)
-np.random.seed(0)
 
-# Set true parameters
+Generate_Movies = False
+# Set true parameters. These are the parameters we want to estimate using MCMC.
 
 a_true = 5e-21
 f_true = 1e-3
@@ -21,7 +19,7 @@ fdot_true = 1e-8
 
 tmax =  120*60*60                 # Final time
 fs = 2*f_true                     # Sampling rate
-delta_t = np.floor(0.01/fs)       # Sampling interval
+delta_t = np.floor(0.01/fs)       # Sampling interval -- largely oversampling here. 
 
 t = np.arange(0,tmax,delta_t)     # Form time vector from t0 = 0 to t_{n-1} = tmax. Length N [include zero]
 
@@ -62,13 +60,82 @@ true_vals = [a_true,f_true, fdot_true]   # True values
 
 a_chain,f_chain,fdot_chain,lp  = MCMC_run(data_f, t, variance_noise_f,
                             Ntotal, burnin, param_start,true_vals,
-                            printerval = 500, save_interval = 50, 
+                            printerval = 5000, save_interval = 50, 
                             a_var_prop = delta_a**2,
                             f_var_prop = delta_f**2,
                             fdot_var_prop = delta_dotf**2,
-                            Generate_Plots = False)  
-breakpoint()   # Set breakpoint to investigate samples for a, f and \dot{f}.
+                            Generate_Movies = Generate_Movies)  
 
-print("delta_a = ", np.sqrt(np.var(a_chain[burnin:])))
-print("delta_f = ", np.sqrt(np.var(f_chain[burnin:])))
-print("delta_fdot = ", np.sqrt(np.var(fdot_chain[burnin:])))
+print("Now entering breakpoint mode. To skip to the next line, type: 'n', to go to the end of the script, type: 'c' ")
+breakpoint() 
+print("Now printing summary statistics:")
+print("Posterior mean value is E(a) = {0}, and standard deviation delta_a = {1}".format(np.mean(a_chain[burnin:]),np.sqrt(np.var(a_chain[burnin:]))))
+print("Posterior mean value is E(f) = {0}, and standard deviation delta_f = {1}".format(np.mean(f_chain[burnin:]), np.sqrt(np.var(f_chain[burnin:]))))
+print("Posterior mean value is E(fdot) = {0}, and standard deviation is delta_fdot = {1}".format(np.mean(fdot_chain),np.sqrt(np.var(fdot_chain[burnin:]))))
+
+
+params = [r'$\log_{10}(a)$', r'$\log_{10}(f_{0})$', r'$\log_{10}(\dot{f}_{0})$']  # Set parameter labels
+N_params = len(params)   # Set number of parameters to investigate
+true_vals_for_plot = [np.log10(true_vals[0]),np.log10(true_vals[1]), np.log10(true_vals[2])]  # Set true values (log)
+
+if Generate_Movies == False:
+    # Plot trace plot
+
+    a_chain_log = np.log10(a_chain)
+    f_chain_log = np.log10(np.array(f_chain))
+    fdot_chain_log = np.log10(np.array(fdot_chain))
+    samples = [a_chain_log, f_chain_log, fdot_chain_log]  # Store samples in a list
+    color = ['green','black','purple']  # Set pretty colours
+
+    fig,ax = plt.subplots(3,1)
+    for k in range(0,3):
+        ax[k].plot(samples[k], color = color[k],label = "Accepted points")
+        ax[k].axhline(y = true_vals_for_plot[k],c = 'red', linestyle='dashed', label = 'True value', )
+        ax[k].set_xlabel('Iteration',fontsize = 10)
+        ax[k].set_ylabel(params[k], fontsize = 10)
+        ax[k].legend(loc = "upper right", fontsize = 12)
+    ax[0].set_title("Trace plots")
+    plt.show()
+
+
+    # Plot trace plot after burnin
+
+    a_chain_log_burnin = a_chain_log[burnin:]   # Discard the first 0, ..., burnin samples from each chain
+    f_chain_log_burnin = f_chain_log[burnin:]
+    fdot_chain_log_burnin = fdot_chain_log[burnin:]
+    samples_burned = [a_chain_log_burnin, f_chain_log_burnin, fdot_chain_log_burnin]
+
+    fig,ax = plt.subplots(3,1)
+    for k in range(0,3):
+        ax[k].plot(samples_burned[k], color = color[k],label = "Accepted points")
+        ax[k].axhline(y = true_vals_for_plot[k],c = 'red', linestyle='dashed', label = 'True value')
+        ax[k].set_xlabel('Iteration',fontsize = 10)
+        ax[k].set_ylabel(params[k], fontsize = 10)
+        ax[k].legend(loc = "upper right", fontsize = 12)
+    ax[0].set_title("Trace plots after burnin")
+    plt.show()
+
+    # Plot corner plot
+
+    samples = np.column_stack(samples_burned)  # Stack samples to plot corner plot
+    figure = corner(samples,bins = 30, color = 'blue',plot_datapoints=False,smooth1d=True,
+                        labels=params, 
+                        label_kwargs = {"fontsize":12},set_xlabel = {'fontsize': 20},
+                        show_titles=True, title_fmt='.7f',title_kwargs={"fontsize": 9},smooth = True)
+
+    axes = np.array(figure.axes).reshape((N_params, N_params))
+
+    for k in range(N_params):   # Plot true values on corner plot (diagonals)
+        ax = axes[k, k]
+        ax.axvline(true_vals_for_plot[k], color="r")  
+        
+    for yi in range(N_params):  # Plot true values on corner plot (non-diagonals)
+        for xi in range(yi):
+            ax = axes[yi, xi]
+            ax.axhline(true_vals_for_plot[yi], color="r")
+            ax.axvline(true_vals_for_plot[xi],color= "r")
+            ax.plot(true_vals_for_plot[xi], true_vals_for_plot[yi], "sr")
+            
+    for ax in figure.get_axes():
+        ax.tick_params(axis='both', labelsize=8)   # Set font of labels
+    plt.show()
