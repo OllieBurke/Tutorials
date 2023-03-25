@@ -1,6 +1,8 @@
 *.DS_Store
 *.pyc
 
+*.ipynb_checkpoints
+
 /MCMC/metropolis/plots
 /MCMC/metropolis/movies
 /MCMC/eryn/samples
