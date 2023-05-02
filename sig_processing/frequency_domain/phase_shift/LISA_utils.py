@@ -27,6 +27,18 @@ def zero_pad(data):
     pow_2 = np.ceil(np.log2(N))
     return np.pad(data,(0,int((2**pow_2)-N)),'constant')
 
+def two_side_pad(data):
+    """
+    This function takes in a vector and zero pads it so it is a power of two.
+    We do this for the O(Nlog_{2}N) cost when we work in the frequency domain.
+    """
+    N = len(data)
+    pow_2 = np.ceil(np.log2(N))
+    K = int((2**pow_2)-N)/2 # Number of zeros we need to pad
+    K_minus = int(np.floor(K))
+    K_pos = int(np.ceil(K))
+    return np.pad(data,(K_minus,K_pos),'constant')
+
 def FFT(waveform):
     """
     Here we taper the signal, pad and then compute the FFT. We remove the zeroth frequency bin because 
