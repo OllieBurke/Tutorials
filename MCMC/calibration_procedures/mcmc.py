@@ -9,8 +9,7 @@ from mcmc_fun import MCMC_run
 import matplotlib.pyplot as plt
 from corner import corner
 np.random.seed(1234)
-
-Generate_Movies = False
+Generate_Plots = True
 # Set true parameters. These are the parameters we want to estimate using MCMC.
 
 a_true = 5e-21
@@ -19,14 +18,14 @@ fdot_true = 1e-8
 
 tmax =  120*60*60                 # Final time
 fs = 2*f_true                     # Sampling rate
-delta_t = np.floor(0.2/fs)       # Sampling interval -- largely oversampling here. 
+delta_t = np.floor(0.3/fs)       # Sampling interval -- largely oversampling here. 
 
 t = np.arange(0,tmax,delta_t)     # Form time vector from t0 = 0 to t_{n-1} = tmax. Length N [include zero]
 
 N_t = int(2**(np.ceil(np.log2(len(t)))))   # Round length of time series to a power of two. 
                                            # Length of time series
-
-h_true_f = FFT(waveform(a_true,f_true,fdot_true,t, eps = 2e-5))         # Compute true signal in
+eps_true = 0
+h_true_f = FFT(waveform(a_true,f_true,fdot_true,t, eps = eps_true))         # Compute true signal in
                                                             # frequency domain. Real signal so only considering
                                                             # positive frequencies here.
 
@@ -59,15 +58,15 @@ param_start = [a_true + 1*delta_a, f_true + 1*delta_f, fdot_true - 1*delta_dotf]
 true_vals = [a_true,f_true, fdot_true]   # True values
 
 a_chain,f_chain,fdot_chain,lp  = MCMC_run(data_f, t, variance_noise_f,
-                            Ntotal, burnin, param_start,true_vals,
-                            printerval = 5000, save_interval = 50, 
+                            Ntotal, param_start,
+                            printerval = 5000,
                             a_var_prop = delta_a**2,
                             f_var_prop = delta_f**2,
-                            fdot_var_prop = delta_dotf**2,
-                            Generate_Movies = Generate_Movies)  
+                            fdot_var_prop = delta_dotf**2)  
+
 
 print("Now entering breakpoint mode. To skip to the next line, type: 'n', to go to the end of the script, type: 'c' ")
-#breakpoint() 
+breakpoint() 
 print("Now printing summary statistics:")
 print("Posterior mean value is E(a) = {0}, and standard deviation delta_a = {1}".format(np.mean(a_chain[burnin:]),np.sqrt(np.var(a_chain[burnin:]))))
 print("Posterior mean value is E(f) = {0}, and standard deviation delta_f = {1}".format(np.mean(f_chain[burnin:]), np.sqrt(np.var(f_chain[burnin:]))))
@@ -78,7 +77,7 @@ params = [r'$\log_{10}(a)$', r'$\log_{10}(f_{0})$', r'$\log_{10}(\dot{f}_{0})$']
 N_params = len(params)   # Set number of parameters to investigate
 true_vals_for_plot = [np.log10(true_vals[0]),np.log10(true_vals[1]), np.log10(true_vals[2])]  # Set true values (log)
 
-if Generate_Movies == False:
+if Generate_Plots == True:
     # Plot trace plot
 
     a_chain_log = np.log10(a_chain)

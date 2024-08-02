@@ -60,4 +60,4 @@ def waveform(a,f,fdot,t,eps = 0):
     for the windowing method. We aim to estimate the parameters $a$, $f$ and $\dot{f}$.
     """
 
-    return (a *(np.sin((2*np.pi)*(f*t + 0.5*fdot * t**2)*(1 - eps))))
+    return (a *(np.sin((2*np.pi)*(f*t + 0.5*fdot * t**2)*(1-eps))))

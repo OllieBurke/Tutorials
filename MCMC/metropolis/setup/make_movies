@@ -11,31 +11,31 @@ fi;
 echo 
 echo building: posterior.gif
 cd plots/joint_post
-convert -loop 0 $(ls -1 *.png | sort -V) joint_post.gif
+convert -loop 0 $(ls -1 *.png | sort -V) joint_post_bias.gif
 mv joint_post.gif ../../movies
 echo finished: posterior.gif
 echo
 echo building: trace_plot_before_burnin.gif
 cd ../trace_plot_before_burnin
-convert -loop 0 $(ls -1 *.png | sort -V) trace_plot_before_burnin.gif
+convert -loop 0 $(ls -1 *.png | sort -V) trace_plot_before_burnin_bias.gif
 mv trace_plot_before_burnin.gif ../../movies
 echo finished: trace_plot_before_burnin.gif
 echo 
 echo building: trace_plot_after_burnin.gif
 cd ../trace_plot_after_burnin
-convert -loop 0 $(ls -1 *.png | sort -V) trace_plot_after_burnin.gif
+convert -loop 0 $(ls -1 *.png | sort -V) trace_plot_after_burnin_bias.gif
 mv trace_plot_after_burnin.gif ../../movies
 echo finished: trace_plot_after_burnin.gif
 echo
 echo building: waveform_plot.gif
 cd ../waveform_plot
-convert -loop 0 $(ls -1 *.png | sort -V) waveform_plot.gif
+convert -loop 0 $(ls -1 *.png | sort -V) waveform_plot_bias.gif
 mv waveform_plot.gif ../../movies
 echo finished: waveform_plot.gif
 echo
 echo building: matched_filter.gif
 cd ../matched_filter
-convert -loop 0 $(ls -1 *.png | sort -V) matched_filter.gif
+convert -loop 0 $(ls -1 *.png | sort -V) matched_filter_bias.gif
 mv matched_filter.gif ../../movies
 echo finshed: matched_filter.gif
 echo

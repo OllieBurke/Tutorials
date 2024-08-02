@@ -1,6 +1,7 @@
 from eryn.ensemble import EnsembleSampler
 from eryn.prior import ProbDistContainer, uniform_dist
 from eryn.backends import HDFBackend
+
 from LISA_utils import FFT, freq_PSD, inner_prod
 
 import os
@@ -58,7 +59,11 @@ t = np.arange(0,tmax,delta_t)     # Form time vector from t0 = 0 to t_{n-1} = tm
 N_t = int(2**(np.ceil(np.log2(len(t)))))   # Round length of time series to a power of two. 
                                            # Length of time series
 
+import time
+start = time.time()
 h_true_t = waveform(true_params)
+end = time.time() - start
+print("Time taken to evaluate waveform is ",end," seconds")
 
 h_true_f = FFT(h_true_t)                        # Compute true signal in
                                                 # frequency domain. Real signal so only considering
@@ -67,6 +72,7 @@ h_true_f = FFT(h_true_t)                        # Compute true signal in
 freq,PSD = freq_PSD(t,delta_t)  # Extract frequency bins and PSD.
 
 SNR2 = inner_prod(h_true_f,h_true_f,PSD,delta_t,N_t)    # Compute optimal matched filtering squared signal-to-noise ratio (SNR)
+breakpoint()
 print("SNR of source",np.sqrt(SNR2))
 
 variance_noise_f = N_t * PSD / (4 * delta_t)            # Calculate variance of noise, real and imaginary.
@@ -82,7 +88,7 @@ data_f = h_true_f + 0*noise_f         # Construct data stream - using zero noise
 
 ndim = len(true_params)               # Dimension of parameter space
 nwalkers = 100          # Number of walkers used to explore parameter space
-ntemps = 5             # Number of temperatures used for parallel tempering scheme.
+ntemps = 2             # Number of temperatures used for parallel tempering scheme.
                        # Each group of walkers (equal to nwalkers) is assigned a temperature from T = 1, ... , ntemps.
 
 tempering_kwargs=dict(ntemps=ntemps)  # Sampler requires the number of temperatures as a dictionary

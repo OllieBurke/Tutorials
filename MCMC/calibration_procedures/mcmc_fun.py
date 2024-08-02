@@ -4,10 +4,6 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 from LISA_utils import FFT, waveform
 
-from plotting_code import (waveform_plot,matched_filter_plot,
-                           trace_plot_before_burnin,trace_plot_after_burnin,
-                           corner_plot_after_burnin)
-
 
 def llike(data_f, signal_f, variance_noise_f):
     """
@@ -56,39 +52,23 @@ def accept_reject(lp_prop, lp_prev):
         return(0)  # Reject
 
 def MCMC_run(data_f, t, variance_noise_f,
-                   Ntotal, burnin, param_start, true_vals, Generate_Movies, printerval, save_interval,
+                   Ntotal, param_start, printerval,
                    a_var_prop, f_var_prop, fdot_var_prop):
     '''
     Metropolis MCMC sampler
     '''
     
-    plot_direc = os.getcwd() + "/plots"
     # Set starting values
 
     a_chain = [param_start[0]]
     f_chain = [param_start[1]]
     fdot_chain = [param_start[2]]
 
-    # Initial signal
+    # Initial signal - using approximate waveform!!
+    eps_approx = 2*1e-5
     
-    signal_init_t = waveform(a_chain[0],f_chain[0],fdot_chain[0],t)   # Initial time domain signal
+    signal_init_t = waveform(a_chain[0],f_chain[0],fdot_chain[0],t,eps = eps_approx)   # Initial time domain signal
     signal_init_f = FFT(signal_init_t)  # Intial frequency domain signal
-
-    # for plots -- uncomment if you don't care.
-
-    params =[r"$\log_{10}(a)$", r"$\log_{10}(f)$", r"$\log_{10}(\dot{f})$"] 
-    N_param = len(params)
-    t_hour = t/60/60
-    np.random.seed(1234)
-    noise_t_plot = np.random.normal(0,8e-21,len(signal_init_t))
-    waveform_true_f = FFT(waveform(true_vals[0],true_vals[1],true_vals[2],t))
-    matched_filter_vec = []
-    opt_SNR = np.sqrt(sum(abs(FFT(waveform(true_vals[0],true_vals[1],true_vals[2],t)))**2 / variance_noise_f ))
-    signal_prop_f = signal_init_f
-
-    j1,j2,j3,j4,j5 = 0,0,0,0,0
-
-    # end commented code here if you don't care about plotting.
 
 
 
@@ -110,20 +90,6 @@ def MCMC_run(data_f, t, variance_noise_f,
             accept_reject_ratio = sum(accept_reject_count)/len(accept_reject_count)
             tqdm.write("Iteration {0}, accept_reject = {1}".format(i,accept_reject_ratio))
 
-        if Generate_Movies:
-            norm = np.sqrt(sum((abs(signal_prop_f)**2) / variance_noise_f))
-            matched_filter = (1/norm) * np.real(sum(np.conjugate(signal_prop_f)*data_f / variance_noise_f))
-            matched_filter_vec.append(matched_filter)
-            if i % save_interval == 0:
-                if i <= burnin:
-                    j1 = waveform_plot(j1, t, t_hour, true_vals, a_prop, f_prop, fdot_prop,noise_t_plot, dir = plot_direc)  # Save still images of waveforms
-                    j2 = matched_filter_plot(j2, matched_filter_vec, opt_SNR, burnin, dir = plot_direc)                     # Save still images of matched filter
-                    j3 = trace_plot_before_burnin(j3,a_chain,f_chain,fdot_chain,true_vals,Ntotal,burnin, dir = plot_direc)  # Save still images of trace plot
-                else:
-                    j4 = trace_plot_after_burnin(j4,a_chain,f_chain,fdot_chain,true_vals,Ntotal,burnin, dir = plot_direc)   # Save still images of trace plot before burnin
-                    j5 = corner_plot_after_burnin(j5, true_vals,a_chain,f_chain,fdot_chain,burnin,params,
-                                                a_prop,f_prop,fdot_prop,N_param,dir = plot_direc)                        # Save still images ofcorner plot after burnin 
-
         lp_prev = lp_store  # Call previous stored log posterior
         
         # Propose new points according to a normal proposal distribution of fixed variance 
@@ -133,7 +99,7 @@ def MCMC_run(data_f, t, variance_noise_f,
         fdot_prop = fdot_chain[i - 1] + np.random.normal(0, np.sqrt(fdot_var_prop))
 
         # Propose a new signal      
-        signal_prop_t = waveform(a_prop,f_prop,fdot_prop,t)
+        signal_prop_t = waveform(a_prop,f_prop,fdot_prop,t,eps = eps_approx)
         signal_prop_f = FFT(signal_prop_t)
 
         
