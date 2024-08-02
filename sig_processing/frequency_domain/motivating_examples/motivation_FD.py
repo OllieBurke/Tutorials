@@ -6,7 +6,6 @@ def signal_gen_harmonics(harmonics, freq = 1):
     gen_signal = [np.cos(2*np.pi*(n+1)*1*t) for n in range(0,harmonics)]
     return sum(gen_signal)
 
-# os.chdir('/Users/oburke/Documents/LISA_Science/Tutorials/Bayesian_Statistics_Tutorial/sig_processing/frequency_domain/plots')
 highest_frequency = 40
 delta_t = (1/(2*highest_frequency))    # Sampling interval - change the 14 to one of {3,5,7,11,13} and look at the difference.
 f_s = 1/delta_t      # Sampling rate
@@ -42,6 +41,7 @@ plt.stem(freq, abs(fft_signal)**2);
 print('length of the time series in time is %s so power at each frequency is n_t/2 = %s'%(n_t,n_t/2))
 plt.xlabel(r'$f$ [Hz]',fontsize = 15);plt.xlim([0,10]);plt.ylabel(r'$|\hat{h}(f)|^2$',fontsize = 15);plt.title('Plot of sinusoid - frequency domain',fontsize = 15);plt.tight_layout();
 # plt.savefig("freq_domain_sig.pdf");
+plt.show()
 plt.clf()
 
 
@@ -53,6 +53,7 @@ data = signal + noise
 
 plt.plot(t,data);plt.xlabel(r'time [seconds]',fontsize = 15);plt.ylabel(r'Amplitude',fontsize = 15);plt.xlim([0,10]);plt.title('Plot of data stream - time domain',fontsize = 15);plt.tight_layout();
 # plt.savefig("data_time_domain.pdf");
+plt.show()
 plt.clf()
 
 data = signal + noise
@@ -61,6 +62,7 @@ plt.xlabel(r'$time [seconds]$',fontsize = 15);plt.ylabel(r'$Amplitude$',fontsize
 plt.xlim([0,10])
 plt.legend()
 plt.tight_layout()
+plt.show()
 # plt.savefig("noise_and_signal_time_domain.pdf");plt.clf()
 
 dft_data = np.fft.rfft(data)
@@ -70,6 +72,7 @@ plt.ylabel(r'$|\hat{d}(f)|^{2}|$',fontsize = 15)
 plt.xlim([0,10])
 plt.title('Plot of data + signal - frequency domain',fontsize = 15)
 plt.tight_layout()
+plt.show()
 # plt.savefig("data_freq_domain.pdf")
 plt.clf()
            
@@ -106,30 +109,31 @@ SNR_time, matched_SNR, opt_SNR = compute_snr_timeseries(signal, data, PSD, delta
 
 # print(matched_SNR,np.real(opt_SNR))
 
-# fig, ax = plt.subplots(1,2, figsize = (16,8))
-# ax[0].plot(t, abs(SNR_time))
-# ax[1].plot(t,signal)
-# #ax.plot(data_times[100:-100], abs(snr2.data), alpha = 0.5)
-# ax[0].set_xlabel("Time")
-# ax[0].set_ylabel("SNR")
+fig, ax = plt.subplots(1,2, figsize = (16,8))
+ax[0].plot(t, abs(SNR_time))
+ax[1].plot(t,signal)
+#ax.plot(data_times[100:-100], abs(snr2.data), alpha = 0.5)
+ax[0].set_xlabel("Time")
+ax[0].set_ylabel("SNR")
 
-# ax[1].set_xlabel("Time")
-# ax[1].set_ylabel("Amplitude")
-# plt.show()
-# plt.clf()
+ax[1].set_xlabel("Time")
+ax[1].set_ylabel("Amplitude")
+plt.show()
+plt.clf()
 
-# breakpoint()
+quit()
+breakpoint()
 
-# dft_noise = np.fft.fft(noise)
-# plt.stem(freq,np.abs(dft_noise)**2)
-# plt.xlabel(r'frequency bins')
-# plt.ylabel(r'power $|n(f)|^{2}|$')           
-# plt.show()
-# plt.clf()
+dft_noise = np.fft.fft(noise)
+plt.stem(freq,np.abs(dft_noise)**2)
+plt.xlabel(r'frequency bins')
+plt.ylabel(r'power $|n(f)|^{2}|$')           
+plt.show()
+plt.clf()
            
-# plt.stem(freq,np.abs(dft_data)**2,'r',label = 'data')
-# plt.stem(freq,np.abs(dft_noise)**2,'blue',label = 'signal')
-# plt.xlabel(r'frequency bins')
-# plt.ylabel(r'power $|d(f)|^{2}|$')
-# plt.show()
-# plt.clf()
+plt.stem(freq,np.abs(dft_data)**2,'r',label = 'data')
+plt.stem(freq,np.abs(dft_noise)**2,'blue',label = 'signal')
+plt.xlabel(r'frequency bins')
+plt.ylabel(r'power $|d(f)|^{2}|$')
+plt.show()
+plt.clf()

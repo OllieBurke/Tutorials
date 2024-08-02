@@ -47,7 +47,7 @@ def FFT(waveform):
     N = len(waveform)
     taper = tukey(N,0.1)
     waveform_w_pad = zero_pad(waveform*taper)
-    return np.fft.rfft(waveform_w_pad)[1:]
+    return np.fft.rfft(waveform_w_pad)
 
 def freq_PSD(waveform_t,delta_t):
     """
@@ -55,7 +55,8 @@ def freq_PSD(waveform_t,delta_t):
     f = 0 frequency bin because the PSD is undefined there.
     """    
     n_t = len(zero_pad(waveform_t))
-    freq = np.fft.rfftfreq(n_t,delta_t)[1:]
+    freq = np.fft.rfftfreq(n_t,delta_t)
+    freq[0] = freq[1]
     PSD = PowerSpectralDensity(freq)
     
     return freq,PSD
