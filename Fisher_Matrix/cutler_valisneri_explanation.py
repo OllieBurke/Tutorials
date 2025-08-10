@@ -139,14 +139,6 @@ freq,PSD = freq_PSD(t,delta_t)  # Extract frequency bins and PSD.
 
 SNR2 = inner_prod(h_true_f,h_true_f,PSD,delta_t,N_t)    # Compute optimal matched filtering SNR
 print("SNR of source",np.sqrt(SNR2))
-variance_noise_f = N_t * PSD / (4 * delta_t)            # Calculate variance of noise, real and imaginary.
-N_f = len(variance_noise_f)                             # Length of signal in frequency domain
-np.random.seed(1235)                                    # Set the seed
-
-# Generate frequency domain noise
-noise_f = np.random.normal(0,np.sqrt(variance_noise_f),N_f) + 1j*np.random.normal(0,np.sqrt(variance_noise_f),N_f) 
-
-data_f = h_true_f + 1*noise_f         # Construct data stream
 
 # Compute FM
 
@@ -169,61 +161,67 @@ Cov_Matrix = np.linalg.inv(Fisher_Matrix)
 
 precision = np.sqrt(np.diag(Cov_Matrix))
 
-Correl_Matrix = np.eye(N_params)
+# Now compute Cutler valisneri biases due to noise 
 
-for i in range(N_params):
-    for j in range(N_params):
-        Correl_Matrix[i,j] = Fisher_Matrix[i,j]/(Fisher_Matrix[i,i]**(1/2) * Fisher_Matrix[j,j]**(1/2))
+variance_noise_f = N_t * PSD / (4 * delta_t)            # Calculate variance of noise, real and imaginary.
+N_f = len(variance_noise_f)                             # Length of signal in frequency domain
 
-fig, ax = plt.subplots(3,3, sharex = 'col', figsize = (16,8))
+noise_bias_f_list = []
+from tqdm import tqdm as tqdm
+for j in tqdm(range(0,500)):
+    noise_f_seed = np.random.normal(0,np.sqrt(variance_noise_f),N_f) + 1j*np.random.normal(0,np.sqrt(variance_noise_f),N_f)
 
-Cov_Matrix_A_f = Cov_Matrix[0:2,0:2]
-Cov_Matrix_A_fdot = np.delete(np.delete(Cov_Matrix,1,axis = 0),1,axis = 1)
+    b_vec = [inner_prod(noise_f_seed,deriv_vec[i],PSD,delta_t,N_t) for i in range(N_params)]
+    noise_bias_f = true_params + Cov_Matrix @ b_vec
 
-Cov_Matrix_f_fdot = Cov_Matrix[1:3,1:3]
+    noise_bias_f_list.append(noise_bias_f)
 
-center_A_f = [true_params[0], true_params[1]]
-center_A_fdot = [true_params[0],true_params[2]]
+# ----------- Take a random selection of points with FM uncertainty ------------
 
-center_f_fdot = [true_params[1],true_params[2]]
+# Create smooth gaussian distribution for parameter 0
+x_range = np.linspace(true_params[0] - 4*np.sqrt(Cov_Matrix[0,0]), 
+                      true_params[0] + 4*np.sqrt(Cov_Matrix[0,0]), 1000)
 
-draw_A_f = np.random.multivariate_normal(center_A_f,Cov_Matrix_A_f,1000)
-draw_A_fdot = np.random.multivariate_normal(center_A_fdot,Cov_Matrix_A_fdot,1000)
-draw_f_fdot = np.random.multivariate_normal(center_f_fdot,Cov_Matrix_f_fdot,1000)
+mean_vals = noise_bias_f_list[0:10]
+uncertainty_param_0 = precision[0]
 
-ax[1,0].scatter(draw_A_f[:,0],draw_A_f[:,1])
-ax[2,0].scatter(draw_A_fdot[:,0],draw_A_fdot[:,1])
-ax[2,1].scatter(draw_f_fdot[:,0],draw_f_fdot[:,1])
-
-colors = ['red','blue','green']
-for i in range(1,4):
-    confidence_ellipse(Cov_Matrix_A_f, center_A_f, ax[1,0], n_std=i, edgecolor=colors[i - 1])
-    confidence_ellipse(Cov_Matrix_A_fdot, center_A_fdot, ax[2,0], n_std=i, edgecolor=colors[i - 1])
-    confidence_ellipse(Cov_Matrix_f_fdot, center_f_fdot, ax[2,1], n_std=i, edgecolor=colors[i - 1])
-
-fig.delaxes(ax[0,1])
-fig.delaxes(ax[0,2])
-fig.delaxes(ax[1,2])
+list_y_gaussian = Gaussian(x_range, true_params[0], np.sqrt(Cov_Matrix[0,0]))
 
 
 
-range_values = [np.arange(true_params[i] - 3*precision[i], true_params[i] + 3*precision[i],precision[i]/100) for i in range(N_params)]
-# breakpoint()
-
-pdfs = [Gaussian(range_values[i],true_params[i],precision[i]) for i in range(N_params)]
-# for j in range(N_params):
-for j in range(N_params):
-    ax[j,j].plot(range_values[j],pdfs[j])
-    ax[j,j].axvline(true_params[j], color='black', linestyle='--', label='True value')
-
-ax[2,0].set_xlabel(r'Amplitude: $a$')
-ax[2,1].set_xlabel(r'Frequency: $f$')
-ax[2,2].set_xlabel(r'Frequency derivative: $\dot{f}$')
-
-ax[1,0].set_ylabel(r'Frequency: $f$')
-ax[2,0].set_ylabel(r'Frequency: $\dot{f}$')
 
 
-plt.show()
+
+# Plot histogram of noise biases vs theoretical Gaussian
+fig, ax = plt.subplots(figsize=(10, 6))
+param_0_values = [noise_bias_f_list[j][0] for j in range(len(noise_bias_f_list))]
+hist_counts, _, _ = ax.hist(param_0_values, bins=30, alpha=0.7, density=False, 
+                            label='Noise Biases', color='skyblue', edgecolor='black')
+max_bin_height = np.max(hist_counts)
+
+# Create smooth gaussian distribution for parameter 0
+x_range = np.linspace(true_params[0] - 4*np.sqrt(Cov_Matrix[0,0]), 
+                      true_params[0] + 4*np.sqrt(Cov_Matrix[0,0]), 1000)
+# Get histogram data to find maximum bin height
+y_gaussian = max_bin_height*Gaussian(x_range, true_params[0], np.sqrt(Cov_Matrix[0,0]))
+
+
+# Extract parameter 0 values from noise bias list
+
+ax.plot(x_range, y_gaussian, label='Theoretical Gaussian', 
+    color='red', linewidth=2)
+
+# Add vertical line for true parameter value
+ax.axvline(true_params[0], color='green', linestyle='--', 
+       linewidth=2, label='True Parameter')
+
+# Formatting
+ax.set_xlabel('Parameter 0 Value')
+ax.set_ylabel('Density')
+ax.set_title('Noise Bias Distribution vs Theoretical Prediction')
+ax.legend()
+ax.grid(True, alpha=0.3)
+
 plt.tight_layout()
+plt.show()
 
